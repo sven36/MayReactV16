@@ -1,0 +1,33 @@
+
+    <view class="anu-block">
+        <view class="anu-item anu-block"><text class="anu-black-title">可以自动聚焦的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" auto-focus placeholder="将会获取焦点" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">控制最大输入长度的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" maxlength="10" placeholder="最大输入长度为10" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">实时获取输入值：{{state.inputValue}}</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" maxlength="10" bindinput="dispatchEvent" placeholder="输入同步到view中" data-input-uid="e84_28" data-beacon-uid="default" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">控制输入的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" bindinput="dispatchEvent" placeholder="连续的两个1会变成2" data-input-uid="e94_28" data-beacon-uid="default" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">控制键盘的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" bindinput="dispatchEvent" placeholder="输入123自动收起键盘" data-input-uid="e104_28" data-beacon-uid="default" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">数字输入的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" type="number" placeholder="这是一个数字输入框" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">密码输入的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" type="password" placeholder="这是一个密码输入框" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">带小数点的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" type="digit" placeholder="带小数点的数字键盘" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">身份证输入的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" type="idcard" placeholder="身份证输入键盘" /></view>
+        </view>
+        <view class="anu-item anu-block"><text class="anu-black-title">控制占位符颜色的input</text>
+            <view class="weui-cell weui-cell_input"><input class="weui-input" placeholder-style="color:#F76260" placeholder="占位符字体是红色的" /></view>
+        </view>
+    </view>

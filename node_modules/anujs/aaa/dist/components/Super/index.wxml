@@ -1,0 +1,5 @@
+
+    <view class="super">
+        <view class="title">最外层组件</view>
+        <anu-parent data-instance-uid="{{'i17_4_' + 0}}" />
+    </view>

@@ -1,0 +1,10 @@
+{
+    "navigationBarTextStyle": "white",
+    "navigationBarBackgroundColor": "#0088a4",
+    "navigationBarTitleText": "Demo",
+    "backgroundColor": "#ffffff",
+    "backgroundTextStyle": "light",
+    "usingComponents": {
+        "anu-navigator": "/components/Navigator/index"
+    }
+}

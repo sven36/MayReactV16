@@ -1,0 +1,13 @@
+
+    <view class="anu-block">
+        <view>演示组件标签包含其他内容</view>
+        <view hidden="{{state.hidden}}">
+            <anu-dialog data-instance-uid="{{'i28_20_' + 0}}">
+                <view>{{state.title}}</view>
+                <view>弹窗其他内容1</view>
+                <view>弹窗其他内容2</view>
+                <view><button type="default" size="mini" bindtap="dispatchEvent" data-tap-uid="e36_32" data-beacon-uid="default">关闭</button></view>
+            </anu-dialog>
+        </view>
+        <view><button type="primary" bindtap="dispatchEvent" data-tap-uid="e44_43" data-beacon-uid="default">点我</button></view>
+    </view>

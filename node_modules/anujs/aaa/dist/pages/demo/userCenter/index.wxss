@@ -1,0 +1,90 @@
+page {
+  background-color: whitesmoke;
+}
+
+.font-27 {
+  font-size: 27rpx;
+}
+
+.anu-line {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.anu-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-center {
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.user-center .user-information {
+  background-color: #fff;
+  font-size: 0;
+  margin-bottom: 1px;
+  padding: 50rpx 0;
+  padding-left: 50rpx;
+}
+.user-center .user-information .user-image {
+  display: inline-block;
+  width: 150rpx;
+  height: 150rpx;
+  vertical-align: top;
+}
+.user-center .user-information .user-name {
+  display: inline-block;
+  height: 150rpx;
+  margin-left: 20rpx;
+  font-size: 31rpx;
+}
+.user-center .qunar-information {
+  justify-content: space-between;
+  padding: 0 30rpx;
+  margin-bottom: 10rpx;
+  background-color: #fff;
+  height: 90rpx;
+  font-size: 27rpx;
+}
+.user-center .qunar-information .right-content {
+  align-items: center;
+  height: 90rpx;
+}
+.user-center .qunar-information .right-content .right-message {
+  display: inline-block;
+  margin-right: 15rpx;
+}
+.user-center .qunar-information .right-content .right-content-image {
+  display: inline-block;
+  width: 12rpx;
+  height: 21rpx;
+}
+.user-center .menu-item {
+  justify-content: space-between;
+  margin-bottom: 1px;
+  padding: 0 30rpx;
+  background-color: #fff;
+  height: 90rpx;
+  font-size: 27rpx;
+  letter-spacing: 1rpx;
+  align-items: center;
+}
+.user-center .menu-item:last-child {
+  margin-bottom: 0;
+}
+.user-center .menu-item .menu-item-title {
+  display: inline-block;
+  font-size: 27rpx;
+}
+.user-center .menu-item .high-light {
+  color: #40a9ff;
+}
+.user-center .menu-item .menu-item-image {
+  width: 12rpx;
+  height: 21rpx;
+}

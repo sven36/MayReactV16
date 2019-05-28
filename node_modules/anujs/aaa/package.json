@@ -1,0 +1,15 @@
+{
+    "license": "MIT",
+    "version": "1.0.0",
+    "nanachi_project": true,
+    "name": "qunar",
+    "nanachi": {
+        "alias": {
+            "@assets": "source/assets",
+            "@common": "source/common"
+        }
+    },
+    "dependencies": {
+        "regenerator-runtime": "^0.12.1"
+    }
+}

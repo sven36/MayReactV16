@@ -1,0 +1,9 @@
+.super {
+  width: 280rpx;
+  height: 280rpx;
+  border: 1px solid #615f5f;
+}
+.super title {
+  font-size: 35rpx;
+  font-weight: 700;
+}

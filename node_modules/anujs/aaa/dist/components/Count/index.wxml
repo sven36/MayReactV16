@@ -1,0 +1,2 @@
+
+    <view>{{props.a}}+{{props.b}}={{props.a + props.b}}</view>

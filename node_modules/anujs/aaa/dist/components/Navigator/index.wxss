@@ -1,0 +1,10 @@
+.anu-navigator {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.anu-navigator text {
+  text-align: center;
+}

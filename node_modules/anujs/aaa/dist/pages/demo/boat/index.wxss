@@ -1,0 +1,115 @@
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+page {
+  background-color: #3399ff;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.font-38 {
+  font-size: 38rpx;
+}
+
+.font-22 {
+  font-size: 22rpx;
+}
+
+.boat {
+  align-self: flex-start;
+  width: 100%;
+  margin-top: 180rpx;
+}
+.boat .boat-content {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 30rpx 25rpx;
+  padding-bottom: 50rpx;
+  margin: 0 20rpx;
+  border-radius: 20rpx;
+}
+.boat .boat-content .city-select-container {
+  margin-bottom: 40rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.boat .boat-content .city-select-container .dot {
+  display: inline-block;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 6rpx;
+  margin-right: 8rpx;
+}
+.boat .boat-content .city-select-container .orgin-city-wrapper {
+  width: 250rpx;
+  font-size: 38rpx;
+  border-bottom-style: solid;
+  border-bottom-color: #bdbcbc;
+  border-bottom-width: 1px;
+  padding-bottom: 10rpx;
+}
+.boat .boat-content .city-select-container .orgin-city-wrapper .tip-wrapper {
+  font-size: 22rpx;
+  color: #b6b6b6;
+}
+.boat .boat-content .city-select-container .orgin-city-wrapper .tip-wrapper .dot {
+  background-color: #44f87a;
+}
+.boat .boat-content .city-select-container .target-city-wrapper {
+  width: 250rpx;
+  font-size: 38rpx;
+  border-bottom-style: solid;
+  border-bottom-color: #bdbcbc;
+  border-bottom-width: 1px;
+  align-items: flex-end;
+  padding-bottom: 10rpx;
+}
+.boat .boat-content .city-select-container .target-city-wrapper .tip-wrapper {
+  font-size: 22rpx;
+  color: #b6b6b6;
+}
+.boat .boat-content .city-select-container .target-city-wrapper .tip-wrapper .dot {
+  background-color: #e45d5d;
+}
+.boat .boat-content .city-select-container .switch-logo {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 36rpx;
+  border: 1px solid #000;
+}
+.boat .boat-content .city-select-container .switch-logo .image {
+  width: 46rpx;
+  height: 32rpx;
+  margin-top: 18rpx;
+  margin-left: 10rpx;
+}
+.boat .boat-content .date-select-container {
+  margin-bottom: 40rpx;
+}
+.boat .boat-content .date-select-container .title {
+  font-size: 24rpx;
+  color: #b6b6b6;
+}
+.boat .boat-content .date-select-container .date {
+  font-size: 38rpx;
+}
+.boat .boat-content .search-btn {
+  width: 100%;
+  border-radius: 37rpx;
+  line-height: 74rpx;
+  text-align: center;
+  background-color: #f38e3c;
+  color: #fff;
+  width: 100%;
+  font-size: 38rpx;
+}

@@ -1,0 +1,2 @@
+
+    <view class="anu-block"><canvas class="content" id="rect" style="{{props['style1367'] }}" canvas-id="rect" /></view>

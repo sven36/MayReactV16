@@ -1,0 +1,4 @@
+
+    <view class="anu-block">
+        <view class="justify-content: flex-end ">{{props.content}}:Cat[{{props.id}}]</view>
+    </view>

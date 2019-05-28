@@ -1,0 +1,7 @@
+
+    <view>
+        <block wx:if="{{state.src}}">
+            <web-view src="{{state.src}}" />
+        </block>
+        <block wx:elif="true"><text>111</text></block>
+    </view>

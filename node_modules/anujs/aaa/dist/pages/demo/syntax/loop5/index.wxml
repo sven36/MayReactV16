@@ -1,0 +1,10 @@
+
+    <view class='anu-block'>
+        <view bindtap="dispatchEvent" data-tap-uid="e23_21" data-beacon-uid="default">点这里添加狗</view>
+        <anu-dog data-instance-uid="{{'i26_16_' + 0}}" />
+        <anu-dog data-instance-uid="{{'i27_16_' + 0}}" />
+        <anu-dog data-instance-uid="{{'i28_16_' + 0}}" />
+        <block wx:if="{{state.add}}">
+            <anu-dog data-instance-uid="{{'i29_34_' + 0}}" />
+        </block>
+    </view>

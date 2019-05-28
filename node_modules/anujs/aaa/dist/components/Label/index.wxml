@@ -1,0 +1,2 @@
+
+    <view bindtap="dispatchEvent" data-tap-uid="e36_17" data-beacon-uid="default"><text>{{state.value}}</text></view>

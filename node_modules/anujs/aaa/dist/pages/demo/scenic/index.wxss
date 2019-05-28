@@ -1,0 +1,104 @@
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.scenic {
+  flex-direction: column;
+  display: flex;
+  width: 100%;
+}
+.scenic .input-wrapper {
+  width: 100%;
+  background-color: #1890ff;
+  padding: 20rpx 0;
+  padding-bottom: 35rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.scenic .input-wrapper .input {
+  flex-grow: 1;
+  background-color: #ffffff;
+  margin-left: 20rpx;
+  margin-right: 20rpx;
+}
+.scenic .input-wrapper .n-input {
+  height: 60rpx;
+  font-size: 22rpx;
+  padding-left: 30rpx;
+}
+.scenic .scenic-content .scenic-content-item {
+  background-color: #ffffff;
+  margin-bottom: 30rpx;
+}
+.scenic .scenic-content .scenic-content-item:last-child {
+  margin-bottom: 0;
+}
+.scenic .scenic-content .title-wrapper {
+  padding: 15rpx 20rpx;
+  font-size: 0;
+}
+.scenic .scenic-content .title-wrapper .mark {
+  display: inline-block;
+  border-left: 2px solid #1890ff;
+  height: 20rpx;
+  margin-right: 20rpx;
+}
+.scenic .scenic-content .title-wrapper .title {
+  display: inline-block;
+  font-size: 25rpx;
+}
+.scenic .scenic-content .scenic-item {
+  font-size: 0;
+  padding: 15rpx 20rpx;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+  display: flex;
+}
+.scenic .scenic-content .scenic-item .left-content {
+  display: inline-block;
+  width: 200rpx;
+  height: 200rpx;
+  vertical-align: top;
+}
+.scenic .scenic-content .scenic-item .right-content {
+  display: inline-block;
+  height: 200rpx;
+  width: 490rpx;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.scenic .scenic-content .scenic-item .right-content .scenic-name {
+  font-size: 30rpx;
+  margin-bottom: 15rpx;
+}
+.scenic .scenic-content .scenic-item .right-content .desc {
+  font-size: 22rpx;
+  margin-bottom: 10rpx;
+}
+.scenic .scenic-content .scenic-item .right-content .comment {
+  font-size: 20rpx;
+}
+.scenic .scenic-content .scenic-item .right-content .price-distance {
+  justify-content: space-between;
+  align-items: center;
+}
+.scenic .scenic-content .scenic-item .right-content .price-distance .price {
+  font-size: 28rpx;
+  color: #faab44;
+}
+.scenic .scenic-content .scenic-item .right-content .price-distance .distance {
+  font-size: 22rpx;
+  color: #e4e3e3;
+}

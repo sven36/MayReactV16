@@ -1,0 +1,4 @@
+
+    <view class="mouti-compoent-wrapper">
+        <anu-super data-instance-uid="{{'i10_16_' + 0}}" />
+    </view>

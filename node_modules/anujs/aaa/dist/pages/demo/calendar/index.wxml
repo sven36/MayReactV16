@@ -1,0 +1,4 @@
+
+    <view class="anu-col">
+        <anu-calendar data-instance-uid="{{'i167_16_' + 0}}" />
+    </view>

@@ -1,0 +1,12 @@
+
+    <view class="anu-block">
+        <view>改动React源码的onBeforeRender相关部分</view>
+        <view>
+            <block wx:if="{{state.condition2}}">
+                <anu-label data-instance-uid="{{'i36_24_' + 0}}">Inactive Condition2</anu-label>
+            </block>
+            <block wx:elif="true">
+                <anu-label data-instance-uid="{{'i38_24_' + 0}}">Active Condition2</anu-label>
+            </block>
+        </view>
+    </view>

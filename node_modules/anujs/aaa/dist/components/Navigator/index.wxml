@@ -1,0 +1,2 @@
+
+    <view class="anu-navigator {{props.class}}" bindtap="dispatchEvent" data-tap-uid="e39_62" data-beacon-uid="default"><text>{{state.title}}</text></view>

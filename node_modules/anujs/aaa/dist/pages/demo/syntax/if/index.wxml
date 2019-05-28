@@ -1,0 +1,39 @@
+
+    <view class='anu-block xxx'>
+        <block wx:if="{{state.condition1}}">
+            <block wx:if="{{state.condition2}}">
+                <view class='anu-block'>
+                    <view>Condition1 active</view>
+                    <anu-ybutton data-instance-uid="{{'i34_32_' + 0}}">Inactive Condition1</anu-ybutton>
+                    <view>Condition2 active</view>
+                    <anu-ybutton data-instance-uid="{{'i38_32_' + 0}}">Inactive Condition2</anu-ybutton>
+                </view>
+            </block>
+            <block wx:elif="true">
+                <view class='anu-block'>
+                    <view>Condition1 active</view>
+                    <anu-ybutton data-instance-uid="{{'i45_32_' + 0}}">Inactive Condition1</anu-ybutton>
+                    <view>Condition2 inactive</view>
+                    <anu-ybutton data-instance-uid="{{'i49_32_' + 0}}">Active Condition2</anu-ybutton>
+                </view>
+            </block>
+        </block>
+        <block wx:elif="true">
+            <block wx:if="{{state.condition2}}">
+                <view class='anu-block'>
+                    <view>Condition1 inactive</view>
+                    <anu-ybutton data-instance-uid="{{'i58_32_' + 0}}">Active Condition1</anu-ybutton>
+                    <view>Condition2 active</view>
+                    <anu-ybutton data-instance-uid="{{'i62_32_' + 0}}">Inactive Condition2</anu-ybutton>
+                </view>
+            </block>
+            <block wx:elif="true">
+                <view class='anu-block'>
+                    <view>Condition1 inactive</view>
+                    <anu-ybutton data-instance-uid="{{'i69_32_' + 0}}">Active Condition1</anu-ybutton>
+                    <view>Condition2 inactive</view>
+                    <anu-ybutton data-instance-uid="{{'i73_32_' + 0}}">Active Condition2</anu-ybutton>
+                </view>
+            </block>
+        </block>
+    </view>

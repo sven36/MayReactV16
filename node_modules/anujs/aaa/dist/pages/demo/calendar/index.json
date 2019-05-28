@@ -1,0 +1,9 @@
+{
+    "backgroundColor": "#FFF",
+    "navigationBarBackgroundColor": "#00BCD4",
+    "navigationBarTitleText": "选择日期",
+    "navigationBarTextStyle": "white",
+    "usingComponents": {
+        "anu-calendar": "/components/Calendar/index"
+    }
+}

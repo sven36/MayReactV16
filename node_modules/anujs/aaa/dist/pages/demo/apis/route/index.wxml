@@ -1,0 +1,5 @@
+
+    <view class="col">
+        <view bindtap="dispatchEvent" class="anu-item" data-tap-uid="e30_13" data-beacon-uid="default"><text>页面跳转(redirectTo)</text></view>
+        <view bindtap="dispatchEvent" class="anu-item" data-tap-uid="e33_13" data-beacon-uid="default"><text>页面回退(navigateBack)</text></view>
+    </view>

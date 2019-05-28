@@ -1,0 +1,7 @@
+
+    <view class="col">
+        <view class="item">{{state.data}}</view>
+        <view class="item" bindtap="dispatchEvent" data-tap-uid="e35_26" data-beacon-uid="default">复制</view>
+        <view class="item" bindtap="dispatchEvent" data-tap-uid="e36_27" data-beacon-uid="default">粘贴</view>
+        <view class="item">{{state.copy}}</view>
+    </view>

@@ -1,0 +1,82 @@
+.strategy-page {
+  flex-direction: column;
+  width: 100%;
+  background-color: #ffffff;
+  align-items: center;
+}
+.strategy-page .row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.strategy-page .col {
+  display: flex;
+  flex-direction: column;
+}
+.strategy-page .fontColor {
+  color: #ffffff;
+}
+.strategy-page .strategy-item {
+  margin-bottom: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.strategy-page .strategy-item:last-child {
+  margin-bottom: 0;
+}
+.strategy-page .strategy-item .big-image {
+  display: block;
+  width: 700rpx;
+  height: 350rpx;
+  border-radius: 5rpx;
+}
+.strategy-page .strategy-item .strategy-item-content {
+  width: 660rpx;
+  height: 290rpx;
+  padding-top: 30rpx;
+  padding-right: 20rpx;
+  padding-bottom: 30rpx;
+  padding-left: 20rpx;
+  color: #fff;
+  margin-top: -350rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.strategy-page .strategy-item .strategy-item-content .desc {
+  font-size: 26rpx;
+  letter-spacing: 1rpx;
+  margin-bottom: 10rpx;
+  display: block;
+}
+.strategy-page .strategy-item .strategy-item-content .date {
+  font-size: 22rpx;
+  display: block;
+}
+.strategy-page .strategy-item .strategy-item-content .user-wrapper {
+  font-size: 0;
+}
+.strategy-page .strategy-item .strategy-item-content .user-wrapper .user-image {
+  display: inline-block;
+  margin-right: 15rpx;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 30rpx;
+  background-color: #fff;
+  vertical-align: top;
+}
+.strategy-page .strategy-item .strategy-item-content .user-wrapper .user-image .image {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 25rpx;
+  margin-top: 5rpx;
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 5rpx;
+}
+.strategy-page .strategy-item .strategy-item-content .user-wrapper .user-name {
+  display: inline-block;
+  line-height: 60rpx;
+  font-size: 26rpx;
+}
