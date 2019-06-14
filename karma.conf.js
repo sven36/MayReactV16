@@ -30,7 +30,9 @@ module.exports = (config) => {
                     test: /\.jsx?$/,
                     use: "babel-loader",
                 }]
-            }
+            },
+            // devtool: '#eval-source-map',
+            mode: 'development'
         },
         colors: true,
         autoWatch: true,
