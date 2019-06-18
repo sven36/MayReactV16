@@ -1,3 +1,18 @@
+
+import {
+    ELEMENT_TYPE_STRING,
+    ELEMENT_TYPE_FUNCTION,
+    ELEMENT_TYPE_SVG,
+    REF_TYPE_STRING,
+    REF_TYPE_FUNCTION,
+    REF_TYPE_OBJECT,
+    REACT_ELEMENT_TYPE
+} from './utils';
+
+let ReactCurrentOwner = {
+    current: null
+}
+
 /**
  * 
  * @param {*} type dom类型或func
@@ -12,17 +27,17 @@ export function createElement(type, config, children) {
     var mtype = null;
     var getContext = null;
     var len = arguments.length - 2;
-    //0代表没有ref 1代表ref为func 2为string
-    var refType = 0;
+    //null代表没有ref 1代表ref为func 2为string
+    var refType = null;
     //既然render的时候都需要判断下type 是fun或string
     //那把这一步提前 比render循环里判断更好些;
     var _type = typeof type;
     switch (_type) {
         case 'string': //HtmlElement 1  SVG 3
-            mtype = type !== 'svg' ? 1 : 3;
+            mtype = type !== 'svg' ? ELEMENT_TYPE_STRING : ELEMENT_TYPE_SVG;
             break;
         case 'function': //component 或statelessComponent
-            mtype = 2;
+            mtype = ELEMENT_TYPE_FUNCTION;
             //如果有contextTypes代表该组件可以取context
             type.contextTypes && (getContext = true);
             break;
@@ -37,10 +52,13 @@ export function createElement(type, config, children) {
             var _refType = typeof ref;
             switch (_refType) {
                 case 'function':
-                    refType = 1;
+                    refType = REF_TYPE_FUNCTION;
                     break;
                 case 'string':
-                    refType = 2;
+                    refType = REF_TYPE_STRING;
+                    break;
+                case 'object':
+                    refType = REF_TYPE_OBJECT;
                     break;
             }
         }
@@ -75,7 +93,7 @@ export function createElement(type, config, children) {
         props.children = children;
     }
 
-    return new Vnode(type, key, ref, props, mtype, getContext, refType);
+    return ReactElement(type, key, ref, props, mtype, getContext, refType, ReactCurrentOwner.current);
 }
 
 /**
@@ -88,18 +106,19 @@ export function createElement(type, config, children) {
  * @param {*} owner 
  * @param {*} props 
  */
-var Vnode = function (type, key, ref, props, mtype, getContext, refType) {
-    this.type = type;
-    this.key = key;
-    this.ref = ref;
-    this.props = props;
-    this.$$typeof = 1;
-    this.mtype = mtype;
-    //之前是直接赋在vnode上 多了之后容易混 
-    //单独新建个对象存放各种信息
-    this.mayInfo = {};
-    this.getContext = getContext;
-    this.refType = refType;
+var ReactElement = function (type, key, ref, props, mtype, getContext, refType, owner) {
+    const element = {
+        $$typeof: REACT_ELEMENT_TYPE,
+        type,
+        key,
+        ref: ref,
+        mtype,
+        refType,
+        props,
+        getContext,
+        _owner: owner
+    }
+    return element;
 }
 
 
