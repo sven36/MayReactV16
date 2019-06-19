@@ -1,5 +1,7 @@
 
-import React from '../src/May16'
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 // import React from "../dist/ReactANU";
 
 describe('may.js', () => {
@@ -50,7 +52,7 @@ describe('may.js', () => {
 
 			}
 		}
-		React.render(<Parent />, container);
+		ReactDOM.render(<Parent />, container);
 		document.body.appendChild(container);
 		expect(console.error.calls.count()).toBe(0);
 	});

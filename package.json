@@ -40,6 +40,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "@babel/runtime": "^7.4.5",
+    "core-js": "^2.6.9",
     "inferno": "^7.1.12"
   }
 }

@@ -28,10 +28,10 @@ module.exports = (config) => {
                 /* Transpile source and test files */
                 rules: [{
                     test: /\.jsx?$/,
-                    use: "babel-loader",
+                    use: "babel-loader?compact=false",
                 }]
             },
-            // devtool: '#eval-source-map',
+            devtool: 'cheap-source-map',
             mode: 'development'
         },
         colors: true,

@@ -11,16 +11,16 @@ module.exports = function (api) {
                     chrome: "67",
                     safari: "11.1",
                 },
-                useBuiltIns: "usage",//是否开启自动支持 polyfill
+                // useBuiltIns: "false",//是否开启自动支持 polyfill
             },
         ],
         [
             "@babel/preset-react",
-            {
-                "pragma": "dom", // default pragma is React.createElement
-                "pragmaFrag": "DomFrag", // default is React.Fragment
-                "throwIfNamespace": false // defaults to true
-            }
+            // {
+            //     "pragma": "dom", // default pragma is React.createElement
+            //     "pragmaFrag": "DomFrag", // default is React.Fragment
+            //     "throwIfNamespace": false // defaults to true
+            // }
         ]
     ];
     const plugins = [
@@ -28,7 +28,7 @@ module.exports = function (api) {
             "@babel/plugin-transform-runtime",
             {
                 "absoluteRuntime": false,
-                "corejs": false,
+                // "corejs": false,
                 "helpers": true,
                 "regenerator": true,
                 "useESModules": false

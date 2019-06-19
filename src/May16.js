@@ -1,6 +1,6 @@
 // import { Children } from 'react-core/Children';
 // import { PropTypes } from 'react-core/PropTypes';
-// import { Component } from 'react-core/Component';
+import { Component, PureComponent } from './MayComponent';
 // import { PureComponent } from 'react-core/PureComponent';
 // import { createRef, forwardRef } from 'react-core/createRef';
 // import { createPortal } from 'react-core/createPortal';
@@ -25,7 +25,9 @@ if (prevReact && prevReact.eventSystem) {
     React = prevReact; //解决引入多个
 } else {
     React = {
-        createElement
+        createElement,
+        Component,
+        PureComponent
     }
     // let {
     //     render,
