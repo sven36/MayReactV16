@@ -6,17 +6,17 @@ module.exports = (config) => {
         files: [
             // all files ending in "_test"
             { pattern: 'test/*.js', watched: false },
-            { pattern: 'test/*_test.js', watched: false },
-            { pattern: 'test/**/*_test.js', watched: false },
+            // { pattern: 'test/*_test.js', watched: false },
+            // { pattern: 'test/**/*_test.js', watched: false },
             // each file acts as entry point for the webpack configuration
         ],
 
         preprocessors: {
             // add webpack as preprocessor
             'test/*.js': ['webpack'],
-            'test/**/*.js': ['webpack'],
-            'test/*_test.js': ['webpack'],
-            'test/**/*_test.js': ['webpack'],
+            // 'test/**/*.js': ['webpack'],
+            // 'test/*_test.js': ['webpack'],
+            // 'test/**/*_test.js': ['webpack'],
         },
 
         webpack: {

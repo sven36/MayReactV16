@@ -1,4 +1,6 @@
 
+
+
 function ReactWork() {
     this._callbacks = null;
     this._didCommit = false;
@@ -31,9 +33,12 @@ ReactWork.prototype._onCommit = function () {
 const ConcurrentRoot = 2;
 const LegacyRoot = 0;
 const BatchedRoot = 1;
-
-function ReactRoot(container, hydrate) {
-    const root = createContainer(container, ConcurrentRoot, hydrate);
+function ReactSyncRoot(container, tag, hydrate) {
+    const root = createContainer(container, tag, hydrate);
+    this._internalRoot = root;
+}
+function ReactRoot(container, isConcurrent, hydrate) {
+    const root = createContainer(container, isConcurrent, hydrate);
     this._internalRoot = root;
 }
 
@@ -47,7 +52,7 @@ const CommitPhase = 5;
 let MAX_SIGNED_31_BIT_INT = 1073741823;
 const Sync = MAX_SIGNED_31_BIT_INT;
 
-ReactRoot.prototype.render = function (children, callback) {
+ReactRoot.prototype.render = ReactSyncRoot.prototype.render = function (children, callback) {
     const root = this._internalRoot;
     const work = new ReactWork();
     if (callback) {
@@ -60,3 +65,4 @@ ReactRoot.prototype.render = function (children, callback) {
     const expirationTime = Sync;
     return work;
 }
+export { ReactRoot, ReactSyncRoot }
