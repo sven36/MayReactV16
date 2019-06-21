@@ -3,6 +3,14 @@ module.exports = function (api) {
 
     const presets = [
         [
+            "@babel/preset-react",
+            // {
+            //     "pragma": "dom", // default pragma is React.createElement
+            //     "pragmaFrag": "DomFrag", // default is React.Fragment
+            //     "throwIfNamespace": false // defaults to true
+            // }
+        ],
+        [
             "@babel/env",
             {
                 targets: {
@@ -14,14 +22,6 @@ module.exports = function (api) {
                 // useBuiltIns: "false",//是否开启自动支持 polyfill
             },
         ],
-        [
-            "@babel/preset-react",
-            // {
-            //     "pragma": "dom", // default pragma is React.createElement
-            //     "pragmaFrag": "DomFrag", // default is React.Fragment
-            //     "throwIfNamespace": false // defaults to true
-            // }
-        ]
     ];
     const plugins = [
         [
