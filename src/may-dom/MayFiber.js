@@ -15,3 +15,30 @@
 const createFiber = function (tag, pendingProps, key, mode) {
     return new FiberNode(tag, pendingProps, key, mode);
 }
+function FiberNode(tag, pendingProps, key, mode) {
+    // Instance
+    this.tag = tag;
+    this.key = key;
+    this.elementType = null;
+    this.type = null;
+    this.stateNode = null;
+    // Fiber
+    this.return = null;
+    this.child = null;
+    this.sibling = null;
+    this.index = 0;
+    this.pendingProps = pendingProps;
+    this.mode = mode;
+}
+let threadIDCounter = 0;
+
+const FiberRootNode = function (containerInfo, tag, hydrate) {
+    this.tag = tag;
+    this.hydrate = hydrate;
+    this.current = null;
+    this.containerInfo = containerInfo;
+    this.interactionThreadID = ++threadIDCounter;
+    this.memoizedInteractions = new Set();
+    this.pendingInteractionMap = new Map();
+}
+export { FiberRootNode, createFiber };

@@ -1,4 +1,4 @@
-
+import { FiberRootNode, createFiber } from './MayFiber';
 
 
 function ReactWork() {
@@ -30,9 +30,35 @@ ReactWork.prototype._onCommit = function () {
         }
     }
 }
-const ConcurrentRoot = 2;
 const LegacyRoot = 0;
 const BatchedRoot = 1;
+const ConcurrentRoot = 2;
+export const NoMode = 0b0000;
+export const StrictMode = 0b0001;
+export const BatchedMode = 0b0010;
+export const ConcurrentMode = 0b0100;
+export const ProfileMode = 0b1000;
+export const HostRoot = 3; // Root of a host tree. Could be nested inside another node.
+
+function createContainer(containerInfo, tag, hydrate) {
+    const root = new FiberRootNode(containerInfo, tag, hydrate);
+    // Cyclic construction. This cheats the type system right now because
+    // stateNode is any.
+    let mode;
+    if (tag === ConcurrentRoot) {
+        mode = ConcurrentMode | BatchedMode | StrictMode;
+    } else if (tag === BatchedRoot) {
+        mode = BatchedMode | StrictMode;
+    } else {
+        mode = NoMode;
+    }
+    const uninitializedFiber = createFiber(HostRoot, null, null, mode);
+    root.current = uninitializedFiber;
+    uninitializedFiber.stateNode = root;
+    return root;
+}
+
+
 function ReactSyncRoot(container, tag, hydrate) {
     const root = createContainer(container, tag, hydrate);
     this._internalRoot = root;
@@ -65,4 +91,26 @@ ReactRoot.prototype.render = ReactSyncRoot.prototype.render = function (children
     const expirationTime = Sync;
     return work;
 }
-export { ReactRoot, ReactSyncRoot }
+// Describes where we are in the React execution stack 'NoContext'
+let NoContext = 0b000000;
+let executionContext = NoContext;
+const BatchedContext = /*               */ 0b000001;
+const EventContext = /*                 */ 0b000010;
+const DiscreteEventContext = /*         */ 0b000100;
+const LegacyUnbatchedContext = /*       */ 0b001000;
+export function unbatchedUpdates(fn, a) {
+    const prevExecutionContext = executionContext;
+    executionContext &= ~BatchedContext;
+    executionContext |= LegacyUnbatchedContext;
+    try {
+        return fn(a);
+    } catch (error) {
+        executionContext = prevExecutionContext;
+        if (executionContext === NoContext) {
+            // Flush the immediate callbacks that were scheduled during this batch
+            // flushSyncCallbackQueue();
+        }
+    }
+}
+
+export { ReactRoot, ReactSyncRoot, LegacyRoot }

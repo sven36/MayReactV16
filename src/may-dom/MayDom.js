@@ -1,8 +1,9 @@
 
-import { ReactRoot } from './scheduleWork';
+import { ReactRoot, ReactSyncRoot, LegacyRoot, unbatchedUpdates } from './scheduleWork';
 
 function render(element, container, callback) {
     let root = container._reactRootContainer;
+    let fiberRoot;
     if (!root) {
         //forceHydrate Hydrate true render false
 
@@ -12,9 +13,14 @@ function render(element, container, callback) {
             container.removeChild(rootSibling);
         };
         //render   shouldHydrateDueToLegacyHeuristic
-        var isConcurrent = false;
-
-        root = container._reactRootContainer = new ReactRoot(container, isConcurrent, shouldHydrate);
+        root = container._reactRootContainer = new ReactSyncRoot(container, LegacyRoot, shouldHydrate);
+        fiberRoot = root._internalRoot;
+        if (typeof callback === 'function') {
+            //TODO 有回调添加回调
+        }
+        unbatchedUpdates(() => {
+            updateContainer(children, fiberRoot, null, callback);
+        })
     }
 }
 let MayDom = {
