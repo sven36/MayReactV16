@@ -1,4 +1,5 @@
 import { FiberRootNode, createFiber } from './MayFiber';
+import { getContextForSubtree } from './MayFiberContext';
 
 
 function ReactWork() {
@@ -84,11 +85,7 @@ ReactRoot.prototype.render = ReactSyncRoot.prototype.render = function (children
     if (callback) {
         work.then(callback);
     }
-    const current = root.current;
-    // 1 unit of expiration time represents 10ms.
-    const currentTime = MAX_SIGNED_31_BIT_INT - 2 - (now() / 10 | 0);
-    const suspenseConfig = null;
-    const expirationTime = Sync;
+    updateContainer(children, root, null, work._onCommit);
     return work;
 }
 // Describes where we are in the React execution stack 'NoContext'
@@ -113,4 +110,19 @@ export function unbatchedUpdates(fn, a) {
     }
 }
 
-export { ReactRoot, ReactSyncRoot, LegacyRoot }
+function updateContainer(element, containerInfo, parentComponent, callback) {
+    const current = root.current;
+    // 1 unit of expiration time represents 10ms.
+    const currentTime = MAX_SIGNED_31_BIT_INT - 2 - (now() / 10 | 0);
+    const suspenseConfig = null;
+    const expirationTime = Sync;
+    const context = getContextForSubtree(parentComponent);
+    if (containerInfo.context === null) {
+        containerInfo.context = context;
+    } else {
+        containerInfo.pendingContext = context;
+    }
+
+}
+
+export { ReactRoot, ReactSyncRoot, LegacyRoot, updateContainer }

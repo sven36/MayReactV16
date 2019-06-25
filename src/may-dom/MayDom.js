@@ -1,5 +1,5 @@
 
-import { ReactRoot, ReactSyncRoot, LegacyRoot, unbatchedUpdates } from './scheduleWork';
+import { ReactRoot, ReactSyncRoot, LegacyRoot, unbatchedUpdates, updateContainer } from './scheduleWork';
 
 function render(element, container, callback) {
     let root = container._reactRootContainer;
