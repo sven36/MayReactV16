@@ -110,6 +110,36 @@ export function unbatchedUpdates(fn, a) {
     }
 }
 
+export const UpdateState = 0;
+export const ReplaceState = 1;
+export const ForceUpdate = 2;
+export const CaptureUpdate = 3;
+
+function createUpdate(expirationTime, suspenseConfig) {
+    return {
+        expirationTime: expirationTime,
+        suspenseConfig: suspenseConfig,
+        tag: UpdateState,
+        payload: null,
+        callback: null,
+        next: null,
+        nextEffect: null
+    };
+}
+function createUpdateQueue(baseState) {
+    const queue = {
+        baseState: baseState,
+        firstUpdate: null,
+        lastUpdate: null,
+        firstCapturedUpdate: null,
+        lastCapturedUpdate: null,
+        firstEffect: null,
+        lastEffect: null,
+        firstCapturedEffect: null,
+        lastCapturedEffect: null
+    };
+    return queue;
+}
 function updateContainer(element, containerInfo, parentComponent, callback) {
     const current = root.current;
     // 1 unit of expiration time represents 10ms.
@@ -122,7 +152,87 @@ function updateContainer(element, containerInfo, parentComponent, callback) {
     } else {
         containerInfo.pendingContext = context;
     }
+    const update = createUpdate(expirationTime, suspenseConfig);
+    if (!callback) {
+        update.callback = callback;
+    }
+    enqueueUpdate(current, update);
 
+}
+
+function appendUpdateToQueue(queue, update) {
+    // Append the update to the end of the list.
+    if (queue.lastUpdate === null) {
+        // Queue is empty
+        queue.firstUpdate = queue.lastUpdate = update;
+    } else {
+        queue.lastUpdate.next = update;
+        queue.lastUpdate = update;
+    }
+}
+
+function markUpdateTimeFromFiberToRoot(fiber, expirationTime) {
+    if (fiber.expirationTime < expirationTime) {
+        fiber.expirationTime = expirationTime;
+    }
+    let alternate = fiber.alternate;
+    if (alternate !== null && alternate.expirationTime < expirationTime) {
+        alternate.expirationTime = expirationTime;
+    }
+    let node = fiber.current;
+    let root = null;
+    if (root === null && fiber.tag === HostRoot) {
+        root = fiber.stateNode;
+    }
+    while (node != null) {
+        if (node.return === null && node.tag === HostRoot) {
+            root = node.stateNode;
+            break;
+        }
+        node = node.return;
+    }
+    return root;
+}
+
+function enqueueUpdate(fiber, update) {
+    /*// 当前父fiber中的位置
+    index: 0,
+
+    // fiber实例对象，指向当前组件实例
+    stateNode: Card,
+ 
+    // setState待更新状态，回调，DOM更新的队列
+    updateQueue: null,
+ 
+    // 当前UI的状态，反映了UI当前在屏幕上的表现状态
+    memoizedState: {},
+ 
+    // 前次渲染中用于决定UI的props
+    memoizedProps: {},
+ 
+    // 即将应用于下一次渲染更新的props
+    pendingProps: {},*/
+
+    // fiber更新时基于当前fiber克隆出的镜像，更新时记录两个fiber diff的变化；更新结束后alternate替换之前的fiber成为新的fiber节点
+    const alternate = fiber.alternate;
+    let queue1 = queue2 = null;
+    if (alternate === null) {
+        queue1 = fiber.updateQueue;
+        if (queu1 === null) {
+            queue1 = fiber.updateQueue = createUpdateQueue(fiber.memoizedState);
+        }
+    }
+    if (queue2 == null) {
+        appendUpdateToQueue(queue1, update);
+    }
+}
+
+function scheduleWork(fiber, expirationTime) {
+    const root = markUpdateTimeFromFiberToRoot(fiber, expirationTime);
+    if(root===null){
+        return;
+    }
+    
 }
 
 export { ReactRoot, ReactSyncRoot, LegacyRoot, updateContainer }
