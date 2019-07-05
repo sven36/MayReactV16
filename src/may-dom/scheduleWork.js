@@ -227,12 +227,17 @@ function enqueueUpdate(fiber, update) {
     }
 }
 
+
+
 function scheduleWork(fiber, expirationTime) {
     const root = markUpdateTimeFromFiberToRoot(fiber, expirationTime);
-    if(root===null){
+    if (root === null) {
         return;
     }
-    
+    if (expirationTime === Sync) {
+
+    }
+
 }
 
 export { ReactRoot, ReactSyncRoot, LegacyRoot, updateContainer }
