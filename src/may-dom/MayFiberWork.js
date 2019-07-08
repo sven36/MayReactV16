@@ -1,4 +1,6 @@
 import { createFiber } from './MayFiber';
+import { IndeterminateComponent, ClassComponent } from '../utils';
+import { HostRoot } from './scheduleWork';
 
 // Describes where we are in the React execution stack
 // let executionContext = NoContext;
@@ -7,7 +9,7 @@ let workInProgressRoot = null;
 // The fiber we're working on
 let workInProgress = null;
 // The expiration time we're rendering
-let renderExpirationTime = NoWork;
+let renderExpirationTime = NoWork = 0;
 const RootIncomplete = 0;
 const RootErrored = 1;
 const RootSuspended = 2;
@@ -56,22 +58,22 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
 function prepareFreshStack(root, expirationTime) {
     root.finishedWork = null;
     root.finishedExpirationTime = NoWork;
-  
+
     const timeoutHandle = root.timeoutHandle;
     if (timeoutHandle !== noTimeout) {
-      // The root previous suspended and scheduled a timeout to commit a fallback
-      // state. Now that we have additional work, cancel the timeout.
-      root.timeoutHandle = noTimeout;
-      // $FlowFixMe Complains noTimeout is not a TimeoutID, despite the check above
-    //   cancelTimeout(timeoutHandle);
+        // The root previous suspended and scheduled a timeout to commit a fallback
+        // state. Now that we have additional work, cancel the timeout.
+        root.timeoutHandle = noTimeout;
+        // $FlowFixMe Complains noTimeout is not a TimeoutID, despite the check above
+        //   cancelTimeout(timeoutHandle);
     }
-  
+
     if (workInProgress !== null) {
-      let interruptedWork = workInProgress.return;
-      while (interruptedWork !== null) {
-        unwindInterruptedWork(interruptedWork);
-        interruptedWork = interruptedWork.return;
-      }
+        let interruptedWork = workInProgress.return;
+        while (interruptedWork !== null) {
+            unwindInterruptedWork(interruptedWork);
+            interruptedWork = interruptedWork.return;
+        }
     }
     workInProgressRoot = root;
     workInProgress = createWorkInProgress(root.current, null, expirationTime);
@@ -81,21 +83,81 @@ function prepareFreshStack(root, expirationTime) {
     workInProgressRootLatestSuspenseTimeout = Sync;
     workInProgressRootCanSuspendUsingConfig = null;
     workInProgressRootHasPendingPing = false;
-  
+
     if (enableSchedulerTracing) {
-      didDeprioritizeIdleSubtree = false;
+        didDeprioritizeIdleSubtree = false;
     }
-  
+
     if (__DEV__) {
-      ReactStrictModeWarnings.discardPendingWarnings();
-      componentsWithSuspendedDiscreteUpdates = null;
-    }
-  }
-
-function renderRoot(root, expirationTime, isSync) {
-    if (root !== workInProgressRoot || expirationTime !== renderExpirationTime) {
-
+        ReactStrictModeWarnings.discardPendingWarnings();
+        componentsWithSuspendedDiscreteUpdates = null;
     }
 }
 
-export { createWorkInProgress };
+function workLoopSync() {
+    // Already timed out, so perform work without checking if we need to yield.
+    while (workInProgress !== null) {
+        workInProgress = performUnitOfWork(workInProgress);
+    }
+}
+
+function workLoop() {
+    // Perform work until Scheduler asks us to yield
+    while (workInProgress !== null && !shouldYield()) {
+        workInProgress = performUnitOfWork(workInProgress);
+    }
+}
+function updateHostRoot(current,workInProgress,renderExpirationTime) {
+    
+}
+
+function beginWork(current, workInProgress, renderExpirationTime) {
+    const updateExpirationTime = renderExpirationTime;
+    if (current !== null) {
+        const oldProps = current.memoizedProps;
+        const newProps = workInProgress.pendingProps;
+
+    }
+
+    workInProgress.expirationTime = NoWork;
+    switch (workInProgress.tag) {
+        case IndeterminateComponent:
+
+            break;
+        case ClassComponent:
+            break;
+        case HostRoot:
+
+            break;
+        default:
+            break;
+    }
+}
+
+function preformUnitOfWork(unitOfWork) {
+    const current = unitOfWork.current;
+    let next = beginWork(current, unitOfWork, renderExpirationTime);
+}
+
+function renderRoot(root, expirationTime, isSync) {
+    if (root !== workInProgressRoot || expirationTime !== renderExpirationTime) {
+        prepareFreshStack(root, expirationTime);
+    }
+    if (workInProgress !== null) {
+        do {
+            try {
+                if (isSync) {
+                    workLoopSync();
+                } else {
+                    workLoop();
+                }
+                break;
+            } catch (error) {
+
+            }
+
+        } while (true);
+    }
+}
+
+export { createWorkInProgress, renderRoot };

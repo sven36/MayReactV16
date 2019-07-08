@@ -1,5 +1,6 @@
 import { FiberRootNode, createFiber } from './MayFiber';
 import { getContextForSubtree } from './MayFiberContext';
+import { renderRoot } from './MayFiberWork';
 
 
 function ReactWork() {
@@ -237,7 +238,10 @@ function scheduleWork(fiber, expirationTime) {
     if (expirationTime === Sync) {
 
     }
-
+    let callback = renderRoot(root, Sync, true);
+    while (callback !== null) {
+        callback = callback(true);
+    }
 }
 
 export { ReactRoot, ReactSyncRoot, LegacyRoot, updateContainer }
