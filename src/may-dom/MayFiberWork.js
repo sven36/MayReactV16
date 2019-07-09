@@ -1,6 +1,6 @@
 import { createFiber } from './MayFiber';
-import { IndeterminateComponent, ClassComponent } from '../utils';
-import { HostRoot } from './scheduleWork';
+import { IndeterminateComponent, ClassComponent, Callback } from '../utils';
+import { HostRoot, UpdateState } from './scheduleWork';
 
 // Describes where we are in the React execution stack
 // let executionContext = NoContext;
@@ -107,8 +107,78 @@ function workLoop() {
         workInProgress = performUnitOfWork(workInProgress);
     }
 }
-function updateHostRoot(current,workInProgress,renderExpirationTime) {
-    
+//获取 需要更新的State
+function processUpdateQueue(workInProgress, queue, props, instance, renderExpirationTime) {
+    let newBaseState = queue.baseState;
+    let newFirstUpdate = null;
+    let newExpirationTime = 0;
+    let update = queue.firstUpdate;
+    let resultState = newBaseState;
+    while (update != null) {
+        const updateExpirationTime = update.expirationTime;
+        if (updateExpirationTime < renderExpirationTime) {
+
+        } else {
+            switch (update.tag) {
+                case UpdateState:
+                    const payload = update.payload;
+                    if (payload) {
+                        resultState = Object.assign({}, resultState, payload);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+            const callback = update.callback;
+            if (callback != null) {
+
+            }
+        }
+        update = update.next;
+    }
+    let newFirstCapturedUpdate = null;
+    update = queue.firstCapturedUpdate;
+    if (newFirstUpdate === null) {
+        queue.lastUpdate = null;
+    }
+    if (newFirstCapturedUpdate === null) {
+        queue.lastCapturedUpdate = null;
+    } else {
+        workInProgress.effectTag |= Callback;
+    }
+    if (newFirstUpdate === null && newFirstCapturedUpdate === null) {
+        // We processed every update, without skipping. That means the new base
+        // state is the same as the result state.
+        newBaseState = resultState;
+    }
+    queue.baseState = newBaseState;
+    queue.firstUpdate = newFirstUpdate;
+    queue.firstCapturedUpdate = newFirstCapturedUpdate;
+    workInProgress.expirationTime = newExpirationTime;
+    workInProgress.memoizedState = resultState;
+}
+
+function reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime) {
+
+}
+
+function updateHostRoot(current, workInProgress, renderExpirationTime) {
+    //TODO context处理
+    const updateQueue = workInProgress.updateQueue;
+    const nextProps = workInProgress.pendingProps;
+    const prevState = workInProgress.memoizedState;
+    const prevChildren = prevState !== null ? prevState.element : null;
+    processUpdateQueue(workInProgress, updateQueue, nextProps, null, renderExpirationTime);
+    const nextState = workInProgress.memoizedState;
+    const nextChildren = nextState.element;
+    const root = workInProgress.stateNode;
+    if (nextChildren === prevChildren) {
+
+    } else {
+        reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime);
+    }
+    return workInProgress.child;
 }
 
 function beginWork(current, workInProgress, renderExpirationTime) {
