@@ -1,5 +1,6 @@
 
-import { ReactRoot, ReactSyncRoot, LegacyRoot, unbatchedUpdates, updateContainer } from './scheduleWork';
+import { ReactRoot, ReactSyncRoot, unbatchedUpdates, updateContainer } from './scheduleWork';
+import { LegacyRoot } from '../utils';
 
 function render(element, container, callback) {
     let root = container._reactRootContainer;
@@ -13,6 +14,8 @@ function render(element, container, callback) {
             container.removeChild(rootSibling);
         };
         //render   shouldHydrateDueToLegacyHeuristic
+        //container也会Fiber化 不同于普通的FiberNode 专有FiberRootNode加入许多流程控制属性，其current也是一个tag为3 HostRoot
+        //的普通FiberNode  该FiberNode的stateNode又指回 FiberRootNode实例 stateNode之意指保存render中各种state的Node吧
         root = container._reactRootContainer = new ReactSyncRoot(container, LegacyRoot, shouldHydrate);
         fiberRoot = root._internalRoot;
         if (typeof callback === 'function') {

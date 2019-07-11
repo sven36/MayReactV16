@@ -1,5 +1,5 @@
 import { createFiber } from './MayFiber';
-import { IndeterminateComponent, ClassComponent, Callback } from '../utils';
+import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner } from '../utils';
 import { HostRoot, UpdateState } from './scheduleWork';
 
 // Describes where we are in the React execution stack
@@ -54,6 +54,11 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
     workInProgress.ref = current.ref;
     return workInProgress;
 }
+/**
+ * 克隆root和Fiber子节点 方便以后对比 空间换效率
+ * @param {*} root 
+ * @param {*} expirationTime 
+ */
 
 function prepareFreshStack(root, expirationTime) {
     root.finishedWork = null;
@@ -76,6 +81,9 @@ function prepareFreshStack(root, expirationTime) {
         }
     }
     workInProgressRoot = root;
+    //createWorkInProgress会互相引用指针
+    //workInProgress.alternate = current;
+    // current.alternate = workInProgress;
     workInProgress = createWorkInProgress(root.current, null, expirationTime);
     renderExpirationTime = expirationTime;
     workInProgressRootExitStatus = RootIncomplete;
@@ -94,19 +102,6 @@ function prepareFreshStack(root, expirationTime) {
     }
 }
 
-function workLoopSync() {
-    // Already timed out, so perform work without checking if we need to yield.
-    while (workInProgress !== null) {
-        workInProgress = performUnitOfWork(workInProgress);
-    }
-}
-
-function workLoop() {
-    // Perform work until Scheduler asks us to yield
-    while (workInProgress !== null && !shouldYield()) {
-        workInProgress = performUnitOfWork(workInProgress);
-    }
-}
 //获取 需要更新的State
 function processUpdateQueue(workInProgress, queue, props, instance, renderExpirationTime) {
     let newBaseState = queue.baseState;
@@ -160,7 +155,59 @@ function processUpdateQueue(workInProgress, queue, props, instance, renderExpira
 }
 
 function reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime) {
+    //Fragment处理
+    const isUnkeyedTopLevelFragment =
+        typeof newChild === 'object' &&
+        newChild !== null &&
+        newChild.type === REACT_FRAGMENT_TYPE &&
+        newChild.key === null;
+    if (isUnkeyedTopLevelFragment) {
+        newChild = newChild.props.children;
+    }
+    // Handle object types
+    const isObject = typeof newChild === 'object' && newChild !== null;
+    if (nextChildren && nextChildren.$$typeof) {
+        switch (nextChildren.$$typeof) {
+            case REACT_ELEMENT_TYPE:
+                const key = element.key;
+                let child = current.child;
+                while (child !== null) {
 
+                }
+                if (element.type === REACT_FRAGMENT_TYPE) {
+
+                } else {
+                    const type = element.type;
+                    const key = element.key;
+                    const pendingProps = element.props;
+                    let fiber;
+                    let fiberTag = IndeterminateComponent;
+                    if (typeof type === 'function') {
+                        var prototype = element.prototype;
+                        if (!!(prototype && prototype.isReactComponent)) {
+                            fiberTag = ClassComponent;
+                        }
+                    } else if (typeof type === 'string') {
+                        fiberTag = HostComponent;
+                    } else {
+
+                    }
+                    fiber = createFiber(fiberTag, pendingProps, key, current.mode);
+                    fiber.elementType = fiber.type = type;
+                    fiber.expirationTime = renderExpirationTime;
+                    //@TODO ref添加
+                    // fiber.ref = coerceRef(returnFiber, currentFirstChild, element);
+                    fiber.return = current;
+                    //effectTag标识该fiber需要进行什么操作 渲染root该fiber只需渲染即可Placement
+                    fiber.effectTag = Placement;
+                    workInProgress.child = fiber;
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
 }
 
 function updateHostRoot(current, workInProgress, renderExpirationTime) {
@@ -195,31 +242,72 @@ function beginWork(current, workInProgress, renderExpirationTime) {
 
             break;
         case ClassComponent:
+            const Component = workInProgress.type;
+            const context = null;
+            const unresolvedProps = workInProgress.pendingProps;
+            const resolvedProps =
+                workInProgress.elementType === Component
+                    ? unresolvedProps
+                    : resolveDefaultProps(Component, unresolvedProps);
+            //@TODO 设置Context
+            const instance = workInProgress.stateNode;
+            if (instance === null) {
+                if (current !== null) {
+                    const reactInstance = new Component(resolvedProps, context);
+                    const state = (workInProgress.memoizedState =
+                        instance.state !== null && instance.state !== undefined
+                            ? instance.state
+                            : null);
+                    reactInstance.updater = classComponentUpdater;
+                    workInProgress.stateNode = reactInstance;
+                    reactInstance._reactInternalFiber = workInProgress;
+                    //@TODO设置生命周期
+                    return reactInstance;
+                }
+            } else if (current === null) {
+
+            }
             break;
         case HostRoot:
-
-            break;
+            return updateHostRoot(current, workInProgress, renderExpirationTime);
         default:
             break;
     }
 }
 
+function completeUnitOfWork(unitOfWork) {
+
+}
+
 function preformUnitOfWork(unitOfWork) {
     const current = unitOfWork.current;
+    //beginWork 返回的是workInProgress的child 即递归向下遍历（默认情况）
     let next = beginWork(current, unitOfWork, renderExpirationTime);
+    unitOfWork.memoizedProps = unitOfWork.pendingProps;
+    if (next === null) {
+        next = completeUnitOfWork(unitOfWork);
+    }
+    ReactCurrentOwner.current = null;
+    return next;
 }
 
 function renderRoot(root, expirationTime, isSync) {
     if (root !== workInProgressRoot || expirationTime !== renderExpirationTime) {
+        //克隆root和Fiber子节点 方便以后对比 空间换效率
         prepareFreshStack(root, expirationTime);
     }
     if (workInProgress !== null) {
         do {
             try {
                 if (isSync) {
-                    workLoopSync();
+                    while (workInProgress !== null) {
+                        workInProgress = performUnitOfWork(workInProgress);
+                    }
                 } else {
-                    workLoop();
+                    // Perform work until Scheduler asks us to yield
+                    while (workInProgress !== null && !shouldYield()) {
+                        workInProgress = performUnitOfWork(workInProgress);
+                    }
                 }
                 break;
             } catch (error) {

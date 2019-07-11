@@ -32,9 +32,7 @@ ReactWork.prototype._onCommit = function () {
         }
     }
 }
-const LegacyRoot = 0;
-const BatchedRoot = 1;
-const ConcurrentRoot = 2;
+
 export const NoMode = 0b0000;
 export const StrictMode = 0b0001;
 export const BatchedMode = 0b0010;
@@ -154,6 +152,8 @@ function updateContainer(element, containerInfo, parentComponent, callback) {
         containerInfo.pendingContext = context;
     }
     const update = createUpdate(expirationTime, suspenseConfig);
+    //payload就是要添加的子元素 子dom
+    update.payload = { element };
     if (!callback) {
         update.callback = callback;
     }
@@ -194,7 +194,12 @@ function markUpdateTimeFromFiberToRoot(fiber, expirationTime) {
     }
     return root;
 }
-
+/**
+ * 把需要更新的放在update对象 然后放在fiber的lastUpdate或firstUpdate
+ * 
+ * @param {*} fiber 
+ * @param {*} update 
+ */
 function enqueueUpdate(fiber, update) {
     /*// 当前父fiber中的位置
     index: 0,
@@ -244,4 +249,4 @@ function scheduleWork(fiber, expirationTime) {
     }
 }
 
-export { ReactRoot, ReactSyncRoot, LegacyRoot, updateContainer }
+export { ReactRoot, ReactSyncRoot, updateContainer }
