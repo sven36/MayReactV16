@@ -157,15 +157,15 @@ function processUpdateQueue(workInProgress, queue, props, instance, renderExpira
 function reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime) {
     //Fragment处理
     const isUnkeyedTopLevelFragment =
-        typeof newChild === 'object' &&
-        newChild !== null &&
-        newChild.type === REACT_FRAGMENT_TYPE &&
-        newChild.key === null;
+        typeof nextChildren === 'object' &&
+        nextChildren !== null &&
+        nextChildren.type === REACT_FRAGMENT_TYPE &&
+        nextChildren.key === null;
+    // const isObject = typeof nextChildren === 'object' && nextChildren !== null;
     if (isUnkeyedTopLevelFragment) {
-        newChild = newChild.props.children;
+        nextChildren = nextChildren.props.children;
     }
-    // Handle object types
-    const isObject = typeof newChild === 'object' && newChild !== null;
+
     if (nextChildren && nextChildren.$$typeof) {
         switch (nextChildren.$$typeof) {
             case REACT_ELEMENT_TYPE:
@@ -206,6 +206,23 @@ function reconcileChildren(current, workInProgress, nextChildren, renderExpirati
 
             default:
                 break;
+        }
+    }
+    if (Array.isArray(nextChildren)) {
+        let resultingFirstChild = null;
+        let previousNewFiber = null;
+        let oldFiber = workInProgress;
+        let lastPlaceIndex = 0;
+        let newIndex = 0;
+        let nextOldFiber = null;
+        for (; oldFiber != null && newIndex < nextChildren.length; newIndex++) {
+            if (oldFiber.index > newIndex) {
+                nextOldFiber = oldFiber;
+                oldFiber = null;
+            } else {
+                nextOldFiber = oldFiber.sibling;
+            }
+            
         }
     }
 }
@@ -250,26 +267,52 @@ function beginWork(current, workInProgress, renderExpirationTime) {
                     ? unresolvedProps
                     : resolveDefaultProps(Component, unresolvedProps);
             //@TODO 设置Context
-            const instance = workInProgress.stateNode;
-            if (instance === null) {
+            const currentInstance = workInProgress.stateNode;
+            if (currentInstance === null) {
                 if (current !== null) {
-                    const reactInstance = new Component(resolvedProps, context);
-                    const state = (workInProgress.memoizedState =
-                        instance.state !== null && instance.state !== undefined
-                            ? instance.state
-                            : null);
-                    reactInstance.updater = classComponentUpdater;
-                    workInProgress.stateNode = reactInstance;
-                    reactInstance._reactInternalFiber = workInProgress;
-                    //@TODO设置生命周期
-                    return reactInstance;
+
                 }
+                const instance = new Component(resolvedProps, context);
+                //getDerivedStateFromProps 使用到state
+                // const state = (workInProgress.memoizedState =
+                //     currentInstance.state !== null && currentInstance.state !== undefined
+                //         ? currentInstance.state
+                //         : null);
+                instance.updater = classComponentUpdater;
+                workInProgress.stateNode = instance;
+                instance._reactInternalFiber = workInProgress;
+                //@TODO设置生命周期
+                let updateQueue = workInProgress.updateQueue;
+                if (updateQueue !== null) {
+                    processUpdateQueue(workInProgress, updateQueue, resolvedProps, instance, renderExpirationTime);
+                    instance.state = workInProgress.memoizedState;
+                }
+                //@TODO markRef 错误处理
+                let nextChildren = instance.render();
+                reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
+                workInProgress.memoizedState = instance.state;
+                return workInProgress.child;
             } else if (current === null) {
 
             }
             break;
         case HostRoot:
             return updateHostRoot(current, workInProgress, renderExpirationTime);
+        case HostComponent:
+            const type = workInProgress.type;
+            const nextProps = workInProgress.pendingProps;
+            const prevProps = current !== null ? current.memoizedProps : null;
+            let nextChildren = nextProps.children;
+            //判断是否是字符串，是字符串直接处理 提高性能
+            const isDirectTextChild = type === 'textarea' || type === 'option' || type === 'noscript' || typeof nextProps.children === 'string' || typeof nextProps.children === 'number' || typeof nextProps.dangerouslySetInnerHTML === 'object' && nextProps.dangerouslySetInnerHTML !== null && nextProps.dangerouslySetInnerHTML.__html != null;
+            if (isDirectTextChild) {
+                nextChildren = null;
+            } else if (prevProps !== null && shouldSetTextContent(type, prevProps)) {
+                workInProgress.effectTag |= ContentReset;
+            }
+            //  markRef(current, workInProgress);
+            reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime);
+            return workInProgress.child;
         default:
             break;
     }
