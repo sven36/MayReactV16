@@ -115,3 +115,8 @@ export const ShouldCapture = /*         */ 0b100000000000;
 export const ReactCurrentOwner = {
     current: null
 }
+
+const __typeOf = Object.prototype.toString;
+export function getType(param) {
+    return __typeOf.call(param);
+}

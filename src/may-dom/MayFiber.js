@@ -1,4 +1,4 @@
-
+import { getType, HostText, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, REACT_PORTAL_TYPE } from "../utils";
 // This is a constructor function, rather than a POJO constructor, still
 // please ensure we do the following:
 // 1) Nobody should add any instance methods on this. Instance methods can be
@@ -41,4 +41,78 @@ const FiberRootNode = function (containerInfo, tag, hydrate) {
     this.memoizedInteractions = new Set();
     this.pendingInteractionMap = new Map();
 }
-export { FiberRootNode, createFiber };
+
+/**
+ * 从ClassComponent创建Fiber
+ * @param {*} type 
+ * @param {*} key 
+ * @param {*} pendingProps 
+ * @param {*} owner 
+ * @param {*} mode 
+ * @param {*} expirationTime 
+ */
+const createFiberFromTypeAndProps = function (type, key, pendingProps, owner, mode, expirationTime) {
+    let fiber;
+    let fiberTag = IndeterminateComponent;
+    let resolvedType = type;
+
+    if (typeof type === 'function') {
+        var prototype = type.prototype;
+        if (!!(prototype && prototype.isReactComponent)) {
+            fiberTag = ClassComponent;
+        }
+    } else if (typeof type === 'string') {
+        fiberTag = HostComponent;
+    } else {
+        switch (type) {
+            case REACT_FRAGMENT_TYPE:
+
+                break;
+
+            default:
+                break;
+        }
+    }
+    fiber = createFiber(fiberTag, pendingProps, key, mode);
+    fiber.elementType = fiber.type = type;
+    fiber.expirationTime = renderExpirationTime;
+    return fiber;
+}
+
+const createChildFiber = function (parentFiber, newChild, expirationTime) {
+    let type = getType(newChild);
+
+    switch (type) {
+        case '[object String]':
+        case '[object Number]':
+            const created = createFiber(HostText, '' + newChild, null, parentFiber.mode);
+            created.expirationTime = expirationTime;
+            created.return = parentFiber;
+            return created;
+        case '[object Boolean]':
+        case '[object Function]':
+        case '[object Symbol]':
+        case '[object Array]':
+            break;
+        case '[object Object]':
+            switch (newChild.$$typeof) {
+                case REACT_ELEMENT_TYPE:
+                    const type = newChild.type;
+                    const key = newChild.key;
+                    const pendingProps = newChild.props;
+                    const created = createFiberFromTypeAndProps(type, key, pendingProps, null, parentFiber.mode, expirationTime)
+                    // created.ref = coerceRef(returnFiber, null, newChild);
+                    created.return = returnFiber;
+                    return created;
+
+                case REACT_PORTAL_TYPE:
+                    break;
+            }
+        default:
+            break;
+    }
+}
+
+
+
+export { FiberRootNode, createFiber, createChildFiber };

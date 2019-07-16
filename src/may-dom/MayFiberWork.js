@@ -1,4 +1,4 @@
-import { createFiber } from './MayFiber';
+import { createFiber, createChildFiber } from './MayFiber';
 import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner } from '../utils';
 import { HostRoot, UpdateState } from './scheduleWork';
 
@@ -154,7 +154,14 @@ function processUpdateQueue(workInProgress, queue, props, instance, renderExpira
     workInProgress.memoizedState = resultState;
 }
 
-function reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime) {
+/**
+ * diffChildren
+ * @param {*} parentFiber 当前Fiber父节点
+ * @param {*} currentChild 当前子元素
+ * @param {*} nextChildren 要更新的子元素
+ * @param {*} renderExpirationTime 
+ */
+function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpirationTime) {
     //Fragment处理
     const isUnkeyedTopLevelFragment =
         typeof nextChildren === 'object' &&
@@ -170,7 +177,7 @@ function reconcileChildren(current, workInProgress, nextChildren, renderExpirati
         switch (nextChildren.$$typeof) {
             case REACT_ELEMENT_TYPE:
                 const key = element.key;
-                let child = current.child;
+                let child = parentFiber.child;
                 while (child !== null) {
 
                 }
@@ -192,15 +199,15 @@ function reconcileChildren(current, workInProgress, nextChildren, renderExpirati
                     } else {
 
                     }
-                    fiber = createFiber(fiberTag, pendingProps, key, current.mode);
+                    fiber = createFiber(fiberTag, pendingProps, key, parentFiber.mode);
                     fiber.elementType = fiber.type = type;
                     fiber.expirationTime = renderExpirationTime;
                     //@TODO ref添加
                     // fiber.ref = coerceRef(returnFiber, currentFirstChild, element);
-                    fiber.return = current;
+                    fiber.return = parentFiber;
                     //effectTag标识该fiber需要进行什么操作 渲染root该fiber只需渲染即可Placement
                     fiber.effectTag = Placement;
-                    workInProgress.child = fiber;
+                    currentChild.child = fiber;
                 }
                 break;
 
@@ -211,7 +218,7 @@ function reconcileChildren(current, workInProgress, nextChildren, renderExpirati
     if (Array.isArray(nextChildren)) {
         let resultingFirstChild = null;
         let previousNewFiber = null;
-        let oldFiber = workInProgress;
+        let oldFiber = currentChild;
         let lastPlaceIndex = 0;
         let newIndex = 0;
         let nextOldFiber = null;
@@ -222,7 +229,24 @@ function reconcileChildren(current, workInProgress, nextChildren, renderExpirati
             } else {
                 nextOldFiber = oldFiber.sibling;
             }
-            
+
+        }
+        //无oldChild直接插入新的子元素即可
+        if (oldFiber === null) {
+            for (; newIndex < nextChildren.length; newIndex++) {
+                const newFiber = createChildFiber(parentFiber, nextChildren[newIndex], expirationTime);
+                if (newFiber === null) {
+                    continue;
+                }
+                // lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+                if (previousNewFiber === null) {
+                    resultingFirstChild = newFiber;
+                } else {
+                    previousNewFiber.sibling = newFiber;
+                }
+                previousNewFiber = newFiber;
+            }
+            return resultingFirstChild;
         }
     }
 }
