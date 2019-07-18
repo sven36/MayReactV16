@@ -8,6 +8,7 @@ describe('may.js', () => {
 	it('mayRender', () => {
 		spyOn(console, 'error');
 		var container = document.createElement('div');
+		document.body.appendChild(container);
 		class Child extends React.Component {
 
 
@@ -52,7 +53,6 @@ describe('may.js', () => {
 			}
 		}
 		ReactDOM.render(<Parent />, container);
-		document.body.appendChild(container);
 		expect(console.error.calls.count()).toBe(0);
 	});
 

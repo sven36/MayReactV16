@@ -22,7 +22,7 @@ function render(element, container, callback) {
             //TODO 有回调添加回调
         }
         unbatchedUpdates(() => {
-            updateContainer(children, fiberRoot, null, callback);
+            updateContainer(element, fiberRoot, null, callback);
         })
     }
 }

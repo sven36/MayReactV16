@@ -1,3 +1,4 @@
+import { networkInterfaces } from "os";
 
 const hasSymbol = typeof Symbol === 'function' && Symbol['for'];
 
@@ -119,4 +120,13 @@ export const ReactCurrentOwner = {
 const __typeOf = Object.prototype.toString;
 export function getType(param) {
     return __typeOf.call(param);
+}
+export let now = function () {
+    let currentTime = 0;
+    if (performance) {
+        currentTime = performance.now();
+    } else {
+        currentTime = Date.now();
+    }
+    return currentTime;
 }

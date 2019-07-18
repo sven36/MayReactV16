@@ -24,6 +24,8 @@ function FiberNode(tag, pendingProps, key, mode) {
     this.stateNode = null;
     // Fiber
     this.return = null;
+    this.alternate = null;
+    this.updateQueue = null;
     this.child = null;
     this.sibling = null;
     this.index = 0;

@@ -1,6 +1,7 @@
 import { FiberRootNode, createFiber } from './MayFiber';
 import { getContextForSubtree } from './MayFiberContext';
 import { renderRoot } from './MayFiberWork';
+import { ConcurrentRoot, BatchedRoot, now } from '../utils';
 
 
 function ReactWork() {
@@ -101,6 +102,7 @@ export function unbatchedUpdates(fn, a) {
     try {
         return fn(a);
     } catch (error) {
+        throw error;
         executionContext = prevExecutionContext;
         if (executionContext === NoContext) {
             // Flush the immediate callbacks that were scheduled during this batch
@@ -139,17 +141,17 @@ function createUpdateQueue(baseState) {
     };
     return queue;
 }
-function updateContainer(element, containerInfo, parentComponent, callback) {
+function updateContainer(element, root, parentComponent, callback) {
     const current = root.current;
     // 1 unit of expiration time represents 10ms.
     const currentTime = MAX_SIGNED_31_BIT_INT - 2 - (now() / 10 | 0);
     const suspenseConfig = null;
     const expirationTime = Sync;
     const context = getContextForSubtree(parentComponent);
-    if (containerInfo.context === null) {
-        containerInfo.context = context;
+    if (root.context === null) {
+        root.context = context;
     } else {
-        containerInfo.pendingContext = context;
+        root.pendingContext = context;
     }
     const update = createUpdate(expirationTime, suspenseConfig);
     //payload就是要添加的子元素 子dom
@@ -221,10 +223,11 @@ function enqueueUpdate(fiber, update) {
 
     // fiber更新时基于当前fiber克隆出的镜像，更新时记录两个fiber diff的变化；更新结束后alternate替换之前的fiber成为新的fiber节点
     const alternate = fiber.alternate;
-    let queue1 = queue2 = null;
+    let queue1 = null;
+    let queue2 = null;
     if (alternate === null) {
         queue1 = fiber.updateQueue;
-        if (queu1 === null) {
+        if (queue1 === null) {
             queue1 = fiber.updateQueue = createUpdateQueue(fiber.memoizedState);
         }
     }

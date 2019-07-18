@@ -1,5 +1,5 @@
 import { createFiber, createChildFiber } from './MayFiber';
-import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner } from '../utils';
+import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent } from '../utils';
 import { HostRoot, UpdateState } from './scheduleWork';
 
 // Describes where we are in the React execution stack
@@ -9,7 +9,8 @@ let workInProgressRoot = null;
 // The fiber we're working on
 let workInProgress = null;
 // The expiration time we're rendering
-let renderExpirationTime = NoWork = 0;
+let renderExpirationTime = 0;
+let NoWork = 0;
 const RootIncomplete = 0;
 const RootErrored = 1;
 const RootSuspended = 2;
@@ -251,6 +252,13 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
     }
 }
 
+function appendChildren(parent, workInProgress, needsVisibilityToggle, isHidden) {
+    let node = workInProgress.child;
+    while (node !== null) {
+
+    }
+}
+
 function updateHostRoot(current, workInProgress, renderExpirationTime) {
     //TODO context处理
     const updateQueue = workInProgress.updateQueue;
@@ -342,8 +350,37 @@ function beginWork(current, workInProgress, renderExpirationTime) {
     }
 }
 
-function completeUnitOfWork(unitOfWork) {
+function completeWork(current, workInProgress, renderExpirationTime) {
+    const newProps = workInProgress.pendingProps;
+    switch (workInProgress.tag) {
+        case IndeterminateComponent:
+            break;
+        case LazyComponent:
+            break;
+        case SimpleMemoComponent:
+        case FunctionComponent:
+            break;
+        case ClassComponent: {
+            const Component = workInProgress.type;
+            // if (isLegacyContextProvider(Component)) {
+            //     popLegacyContext(workInProgress);
+            // }
+            break;
+        }
+        case HostRoot:
+            const fiberRoot = workInProgress.stateNode;
 
+            break;
+        case HostComponent:
+
+            //
+            const rootContainerInstance = container;
+            const type = workInProgress.type;
+            let parentNameSpace = "http://www.w3.org/1999/xhtml";
+            const domElement = document.createElement(type);
+            workInProgress.stateNode = domElement;
+            break;
+    }
 }
 
 function preformUnitOfWork(unitOfWork) {
@@ -352,7 +389,17 @@ function preformUnitOfWork(unitOfWork) {
     let next = beginWork(current, unitOfWork, renderExpirationTime);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
     if (next === null) {
-        next = completeUnitOfWork(unitOfWork);
+        workInProgress = unitOfWork;
+        do {
+            const current = workInProgress.alternate;
+            const returnFiber = workInProgress.return;
+            if ((workInProgress.effectTag & Incomplete) === NoEffect) {
+                next = completeWork(current, workInProgress, renderExpirationTime);
+                if (next !== null) {
+                    return next;
+                }
+            }
+        } while (workInProgress !== null);
     }
     ReactCurrentOwner.current = null;
     return next;
@@ -382,6 +429,16 @@ function renderRoot(root, expirationTime, isSync) {
             }
 
         } while (true);
+    }
+    root.finishedWork = root.current.alternate;
+    root.finishedExpirationTime = expirationTime;
+    workInProgressRoot = null;
+    switch (workInProgressRootExitStatus) {
+        case RootCompleted:
+            return commitRoot.bind(null, root);
+
+        default:
+            break;
     }
 }
 
