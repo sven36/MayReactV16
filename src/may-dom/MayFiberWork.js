@@ -1,6 +1,6 @@
 import { createFiber, createChildFiber } from './MayFiber';
-import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent } from '../utils';
-import { HostRoot, UpdateState } from './scheduleWork';
+import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent, noTimeout, Sync } from '../utils';
+import { HostRoot, UpdateState, classComponentUpdater } from './scheduleWork';
 
 // Describes where we are in the React execution stack
 // let executionContext = NoContext;
@@ -31,6 +31,7 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
         workInProgress = createFiber(current.tag, pendingProps, current.key, current.mode);
         workInProgress.elementType = current.elementType;
         workInProgress.type = current.type;
+        workInProgress.child = null;
         workInProgress.stateNode = current.stateNode;
         workInProgress.alternate = current;
         current.alternate = workInProgress;
@@ -82,25 +83,23 @@ function prepareFreshStack(root, expirationTime) {
         }
     }
     workInProgressRoot = root;
-    //createWorkInProgress会互相引用指针
-    //workInProgress.alternate = current;
-    // current.alternate = workInProgress;
+
     workInProgress = createWorkInProgress(root.current, null, expirationTime);
     renderExpirationTime = expirationTime;
     workInProgressRootExitStatus = RootIncomplete;
-    workInProgressRootLatestProcessedExpirationTime = Sync;
-    workInProgressRootLatestSuspenseTimeout = Sync;
-    workInProgressRootCanSuspendUsingConfig = null;
-    workInProgressRootHasPendingPing = false;
+    // workInProgressRootLatestProcessedExpirationTime = Sync;
+    // workInProgressRootLatestSuspenseTimeout = Sync;
+    // workInProgressRootCanSuspendUsingConfig = null;
+    // workInProgressRootHasPendingPing = false;
 
-    if (enableSchedulerTracing) {
-        didDeprioritizeIdleSubtree = false;
-    }
+    // if (enableSchedulerTracing) {
+    //     didDeprioritizeIdleSubtree = false;
+    // }
 
-    if (__DEV__) {
-        ReactStrictModeWarnings.discardPendingWarnings();
-        componentsWithSuspendedDiscreteUpdates = null;
-    }
+    // if (__DEV__) {
+    //     ReactStrictModeWarnings.discardPendingWarnings();
+    //     componentsWithSuspendedDiscreteUpdates = null;
+    // }
 }
 
 //获取 需要更新的State
@@ -177,21 +176,20 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
     if (nextChildren && nextChildren.$$typeof) {
         switch (nextChildren.$$typeof) {
             case REACT_ELEMENT_TYPE:
-                const key = element.key;
+                const key = nextChildren.key;
                 let child = parentFiber.child;
                 while (child !== null) {
 
                 }
-                if (element.type === REACT_FRAGMENT_TYPE) {
+                if (nextChildren.type === REACT_FRAGMENT_TYPE) {
 
                 } else {
-                    const type = element.type;
-                    const key = element.key;
-                    const pendingProps = element.props;
+                    const type = nextChildren.type;
+                    const pendingProps = nextChildren.props;
                     let fiber;
                     let fiberTag = IndeterminateComponent;
                     if (typeof type === 'function') {
-                        var prototype = element.prototype;
+                        var prototype = type.prototype;
                         if (!!(prototype && prototype.isReactComponent)) {
                             fiberTag = ClassComponent;
                         }
@@ -208,7 +206,7 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
                     fiber.return = parentFiber;
                     //effectTag标识该fiber需要进行什么操作 渲染root该fiber只需渲染即可Placement
                     fiber.effectTag = Placement;
-                    currentChild.child = fiber;
+                    // currentChild.child = fiber;
                 }
                 break;
 
@@ -264,7 +262,7 @@ function updateHostRoot(current, workInProgress, renderExpirationTime) {
     const updateQueue = workInProgress.updateQueue;
     const nextProps = workInProgress.pendingProps;
     const prevState = workInProgress.memoizedState;
-    const prevChildren = prevState !== null ? prevState.element : null;
+    const prevChildren = prevState && prevState.element ? prevState.element : null;
     processUpdateQueue(workInProgress, updateQueue, nextProps, null, renderExpirationTime);
     const nextState = workInProgress.memoizedState;
     const nextChildren = nextState.element;
@@ -381,10 +379,11 @@ function completeWork(current, workInProgress, renderExpirationTime) {
             workInProgress.stateNode = domElement;
             break;
     }
+    return null;
 }
 
-function preformUnitOfWork(unitOfWork) {
-    const current = unitOfWork.current;
+function performUnitOfWork(unitOfWork) {
+    const current = unitOfWork.alternate;
     //beginWork 返回的是workInProgress的child 即递归向下遍历（默认情况）
     let next = beginWork(current, unitOfWork, renderExpirationTime);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
@@ -399,6 +398,7 @@ function preformUnitOfWork(unitOfWork) {
                     return next;
                 }
             }
+            workInProgress = returnFiber;
         } while (workInProgress !== null);
     }
     ReactCurrentOwner.current = null;
@@ -425,7 +425,7 @@ function renderRoot(root, expirationTime, isSync) {
                 }
                 break;
             } catch (error) {
-
+                throw error;
             }
 
         } while (true);

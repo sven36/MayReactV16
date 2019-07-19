@@ -1,7 +1,7 @@
 import { FiberRootNode, createFiber } from './MayFiber';
 import { getContextForSubtree } from './MayFiberContext';
 import { renderRoot } from './MayFiberWork';
-import { ConcurrentRoot, BatchedRoot, now } from '../utils';
+import { ConcurrentRoot, BatchedRoot, now, Sync, MAX_SIGNED_31_BIT_INT } from '../utils';
 
 
 function ReactWork() {
@@ -31,6 +31,19 @@ ReactWork.prototype._onCommit = function () {
         while (callback = callbacks.shift()) {
             callback();
         }
+    }
+}
+
+const classComponentUpdater = {
+    isMounted: false,
+    enqueueSetState() {
+
+    },
+    enqueueReplaceState() {
+
+    },
+    enqueueForceUpdate() {
+
     }
 }
 
@@ -73,11 +86,6 @@ let currentEventTime = 0;
 let workPhase = 0;
 const RenderPhase = 4;
 const CommitPhase = 5;
-// Max 31 bit integer. The max integer size in V8 for 32-bit systems.
-// Math.pow(2, 30) - 1
-// 0b111111111111111111111111111111
-let MAX_SIGNED_31_BIT_INT = 1073741823;
-const Sync = MAX_SIGNED_31_BIT_INT;
 
 ReactRoot.prototype.render = ReactSyncRoot.prototype.render = function (children, callback) {
     const root = this._internalRoot;
@@ -156,11 +164,12 @@ function updateContainer(element, root, parentComponent, callback) {
     const update = createUpdate(expirationTime, suspenseConfig);
     //payload就是要添加的子元素 子dom
     update.payload = { element };
-    if (!callback) {
+    if (callback) {
         update.callback = callback;
     }
     enqueueUpdate(current, update);
-
+    scheduleWork(current, expirationTime);
+    return expirationTime;
 }
 
 function appendUpdateToQueue(queue, update) {
@@ -252,4 +261,4 @@ function scheduleWork(fiber, expirationTime) {
     }
 }
 
-export { ReactRoot, ReactSyncRoot, updateContainer }
+export { ReactRoot, ReactSyncRoot, updateContainer, classComponentUpdater }

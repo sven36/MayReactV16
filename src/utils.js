@@ -113,6 +113,13 @@ export const HostEffectMask = /*        */ 0b001111111111;
 export const Incomplete = /*            */ 0b010000000000;
 export const ShouldCapture = /*         */ 0b100000000000;
 
+// Max 31 bit integer. The max integer size in V8 for 32-bit systems.
+// Math.pow(2, 30) - 1
+// 0b111111111111111111111111111111
+export let MAX_SIGNED_31_BIT_INT = 1073741823;
+export const Sync = MAX_SIGNED_31_BIT_INT;
+
+export const noTimeout = -1;
 export const ReactCurrentOwner = {
     current: null
 }
