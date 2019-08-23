@@ -1,5 +1,5 @@
 import { createFiber, createChildFiber } from './MayFiber';
-import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent, noTimeout, Sync } from '../utils';
+import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent, noTimeout, Sync, PerformedWork, HostText } from '../utils';
 import { HostRoot, UpdateState, classComponentUpdater } from './scheduleWork';
 
 // Describes where we are in the React execution stack
@@ -56,12 +56,75 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
     workInProgress.ref = current.ref;
     return workInProgress;
 }
+
+
+//初始化dom属性
+function setInitialProperties(domElement, tag, nextProps, rootContainerElement, isCustomComponentTag) {
+    // const isCustomComponentTag = isCustomComponent(tag, rawProps);
+    let props;
+    switch (tag) {
+        case 'iframe':
+        case 'object':
+        case 'embed':
+
+            break;
+
+        default:
+            props = nextProps;
+
+            break;
+    }
+    //setInitialDOMProperties(tag, domElement, rootContainerElement, props, isCustomComponentTag);
+    for (const key in nextProps) {
+        if (nextProps.hasOwnProperty(key)) {
+            const nextProp = nextProps[key];
+            switch (nextProp) {
+                case 'style':
+
+                    break;
+                case 'dangerouslySetInnerHTML':
+
+                    break;
+                case 'children':
+                    if (typeof nextProp === 'string') {
+                        let canSetTextContent = tag !== 'textarea' || nextProp !== '';
+
+                        if (canSetTextContent) {
+                            domElement.textContent = text;
+                            // if (text) {
+                            //     var firstChild = node.firstChild;
+
+                            //     if (firstChild && firstChild === node.lastChild && firstChild.nodeType === TEXT_NODE) {
+                            //       firstChild.nodeValue = text;
+                            //       return;
+                            //     }
+                            //   }
+                            //   setTextContent(domElement, nextProp);
+                        }
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+
+}
+
+
+
+
+
+
+
+
 /**
  * 克隆root和Fiber子节点 方便以后对比 空间换效率
  * @param {*} root 
  * @param {*} expirationTime 
  */
-
 function prepareFreshStack(root, expirationTime) {
     root.finishedWork = null;
     root.finishedExpirationTime = NoWork;
@@ -102,7 +165,7 @@ function prepareFreshStack(root, expirationTime) {
     // }
 }
 
-//获取 需要更新的State
+//获取 需要更新的State update是一个链表，每个对象都包含当前node更新的信息和链表指向
 function processUpdateQueue(workInProgress, queue, props, instance, renderExpirationTime) {
     let newBaseState = queue.baseState;
     let newFirstUpdate = null;
@@ -115,6 +178,7 @@ function processUpdateQueue(workInProgress, queue, props, instance, renderExpira
 
         } else {
             switch (update.tag) {
+                //在此区别是replace,update还是forceHydrate等
                 case UpdateState:
                     const payload = update.payload;
                     if (payload) {
@@ -151,6 +215,7 @@ function processUpdateQueue(workInProgress, queue, props, instance, renderExpira
     queue.firstUpdate = newFirstUpdate;
     queue.firstCapturedUpdate = newFirstCapturedUpdate;
     workInProgress.expirationTime = newExpirationTime;
+    //设置node state
     workInProgress.memoizedState = resultState;
 }
 
@@ -177,7 +242,8 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
         switch (nextChildren.$$typeof) {
             case REACT_ELEMENT_TYPE:
                 const key = nextChildren.key;
-                let child = parentFiber.child;
+                // let child = parentFiber.child;
+                let child = currentChild;
                 while (child !== null) {
 
                 }
@@ -203,6 +269,7 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
                     fiber.expirationTime = renderExpirationTime;
                     //@TODO ref添加
                     // fiber.ref = coerceRef(returnFiber, currentFirstChild, element);
+                    //链表结构
                     fiber.return = parentFiber;
                     //effectTag标识该fiber需要进行什么操作 渲染root该fiber只需渲染即可Placement
                     fiber.effectTag = Placement;
@@ -238,6 +305,7 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
                     continue;
                 }
                 // lastPlacedIndex = placeChild(newFiber, lastPlacedIndex, newIdx);
+                //单向链表
                 if (previousNewFiber === null) {
                     resultingFirstChild = newFiber;
                 } else {
@@ -250,10 +318,13 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
     }
 }
 
+//深度优先至最深Node 添加子元素再上溯
 function appendChildren(parent, workInProgress, needsVisibilityToggle, isHidden) {
     let node = workInProgress.child;
     while (node !== null) {
+        if (node.tag === HostComponent || node.tag === HostText) {
 
+        }
     }
 }
 
@@ -263,6 +334,7 @@ function updateHostRoot(current, workInProgress, renderExpirationTime) {
     const nextProps = workInProgress.pendingProps;
     const prevState = workInProgress.memoizedState;
     const prevChildren = prevState && prevState.element ? prevState.element : null;
+    //初始化update对象，node state赋值(即memoizedState)
     processUpdateQueue(workInProgress, updateQueue, nextProps, null, renderExpirationTime);
     const nextState = workInProgress.memoizedState;
     const nextChildren = nextState.element;
@@ -300,7 +372,10 @@ function beginWork(current, workInProgress, renderExpirationTime) {
             const currentInstance = workInProgress.stateNode;
             if (currentInstance === null) {
                 if (current !== null) {
-
+                    //之前存在则是diff
+                    current.alternate = null;
+                    workInProgress.alternate = null;
+                    workInProgress.effectTag |= Placement;
                 }
                 const instance = new Component(resolvedProps, context);
                 //getDerivedStateFromProps 使用到state
@@ -309,17 +384,27 @@ function beginWork(current, workInProgress, renderExpirationTime) {
                 //         ? currentInstance.state
                 //         : null);
                 instance.updater = classComponentUpdater;
+                //stateNode包含state的Node,Fiber是链表Node,保存该node,diff,渲染等信息,stateNode则是用户操作render之后的ReactElement
                 workInProgress.stateNode = instance;
                 instance._reactInternalFiber = workInProgress;
+                //设置之前属性，无更新保持不变
+                instance.props = resolvedProps;
+                instance.state = workInProgress.memoizedState;
                 //@TODO设置生命周期
                 let updateQueue = workInProgress.updateQueue;
                 if (updateQueue !== null) {
                     processUpdateQueue(workInProgress, updateQueue, resolvedProps, instance, renderExpirationTime);
                     instance.state = workInProgress.memoizedState;
                 }
+                //finishClassComponent function
                 //@TODO markRef 错误处理
+                ReactCurrentOwner.current = workInProgress;
                 let nextChildren = instance.render();
-                reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
+                workInProgress.effectTag |= PerformedWork;
+                if (current === null) {
+                    //第一次render current为null
+                    reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
+                }
                 workInProgress.memoizedState = instance.state;
                 return workInProgress.child;
             } else if (current === null) {
@@ -341,13 +426,17 @@ function beginWork(current, workInProgress, renderExpirationTime) {
                 workInProgress.effectTag |= ContentReset;
             }
             //  markRef(current, workInProgress);
-            reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime);
+            if (current === null) {
+                reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
+            }
+            // reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime);
             return workInProgress.child;
         default:
             break;
     }
 }
 
+//render递归至最深node 不停fiber化(生成单向链表dom树) 再completeWork
 function completeWork(current, workInProgress, renderExpirationTime) {
     const newProps = workInProgress.pendingProps;
     switch (workInProgress.tag) {
@@ -371,11 +460,16 @@ function completeWork(current, workInProgress, renderExpirationTime) {
             break;
         case HostComponent:
 
-            //
+            //popHostContext 清除当前Context
+            //rootContainerInstance是保存在全局的Container
             const rootContainerInstance = container;
             const type = workInProgress.type;
             let parentNameSpace = "http://www.w3.org/1999/xhtml";
             const domElement = document.createElement(type);
+            //setInitialProperties 针对特殊dom节点如textarea,embed等初始化相应属性
+            appendChildren(domElement, workInProgress, false, false);
+            //少context
+            setInitialProperties(domElement, type, newProps, rootContainerInstance, '')
             workInProgress.stateNode = domElement;
             break;
     }
@@ -388,15 +482,46 @@ function performUnitOfWork(unitOfWork) {
     let next = beginWork(current, unitOfWork, renderExpirationTime);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
     if (next === null) {
+        //最深处Node 深度优先递归回归
         workInProgress = unitOfWork;
         do {
             const current = workInProgress.alternate;
+            //链表上一级 parentNode
             const returnFiber = workInProgress.return;
             if ((workInProgress.effectTag & Incomplete) === NoEffect) {
                 next = completeWork(current, workInProgress, renderExpirationTime);
                 if (next !== null) {
                     return next;
                 }
+                if (returnFiber !== null && (workInProgress.effectTag & Incomplete) === NoEffect) {
+                    if (returnFiber.firstEffect == null) {
+                        returnFiber.firstEffect = workInProgress.firstEffect;
+                    }
+                    if (workInProgress.lastEffect !== null) {
+                        if (returnFiber.lastEffect !== null) {
+                            returnFiber.lastEffect.nextEffect = workInProgress.firstEffect;
+                        }
+                        returnFiber.lastEffect = workInProgress.lastEffect;
+                    }
+
+                    let effectTag = workInProgress.effectTag; // Skip both NoWork and PerformedWork tags when creating the effect
+                    // list. PerformedWork effect is read by React DevTools but shouldn't be
+                    // committed.
+
+                    if (effectTag > PerformedWork) {
+                        if (returnFiber.lastEffect !== null) {
+                            returnFiber.lastEffect.nextEffect = workInProgress;
+                        } else {
+                            returnFiber.firstEffect = workInProgress;
+                        }
+
+                        returnFiber.lastEffect = workInProgress;
+                    }
+                }
+            }
+            const siblingFiber = workInProgress.sibling;
+            if (siblingFiber !== null) {
+                return siblingFiber;
             }
             workInProgress = returnFiber;
         } while (workInProgress !== null);
