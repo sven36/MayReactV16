@@ -244,9 +244,9 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
                 const key = nextChildren.key;
                 // let child = parentFiber.child;
                 let child = currentChild;
-                while (child !== null) {
+                // while (child !== null) {
 
-                }
+                // }
                 if (nextChildren.type === REACT_FRAGMENT_TYPE) {
 
                 } else {
@@ -482,6 +482,7 @@ function performUnitOfWork(unitOfWork) {
     let next = beginWork(current, unitOfWork, renderExpirationTime);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
     if (next === null) {
+        //completeUnitOfWork
         //最深处Node 深度优先递归回归
         workInProgress = unitOfWork;
         do {
@@ -525,9 +526,64 @@ function performUnitOfWork(unitOfWork) {
             }
             workInProgress = returnFiber;
         } while (workInProgress !== null);
+        if (workInProgressRootExitStatus === RootIncomplete) {
+            workInProgressRootExitStatus = RootCompleted;
+        }
     }
     ReactCurrentOwner.current = null;
     return next;
+}
+let ic = 0;
+
+/**
+ * append到contaier,处理生命周期，结束render流程
+ * @param {Object} root FiberNode
+ */
+function commitRoot(root) {
+    const finishedWork = root.finishedWork;
+    const expirationTime = root.finishedExpirationTime;
+    if (finishedWork === null) {
+        return null;
+    }
+    root.finishedWork = null;
+    root.finishedExpirationTime = NoWork;
+    root.callbackNode = null;
+    // root.callbackExpirationTime = NoWork;
+    //各种time设置
+    // const updateExpirationTimeBeforeCommit = finishedWork.expirationTime;
+    if (root == workInProgressRoot) {
+        workInProgressRoot = null;
+        workInProgress = null;
+        renderExpirationTime = NoWork;
+    }
+
+    let firstEffect;
+    if (finishedWork.effectTag > PerformedWork) {
+        if (finishedWork.lastEffect != null) {
+            finishedWork.lastEffect.nextEffect = finishedWork;
+            firstEffect = finishedWork.firstEffect;
+        } else {
+            firstEffect = finishedWork;
+        }
+    } else {
+        firstEffect = finishedWork.firstEffect;
+    }
+    if (firstEffect !== null) {
+        //设置Context
+        // const prevExecutionContext = executionContext;
+        // executionContext |= CommitContext;
+        let prevInteractions;
+        ReactCurrentOwner.current = null;
+    }
+    nextEffect = firstEffect;
+    do {
+        try {
+            nextEffect = null;
+        } catch (error) {
+            throw Error('commit');
+        }
+    } while (nextEffect !== null);
+
 }
 
 function renderRoot(root, expirationTime, isSync) {
@@ -540,6 +596,10 @@ function renderRoot(root, expirationTime, isSync) {
             try {
                 if (isSync) {
                     while (workInProgress !== null) {
+                        ic++;
+                        if (ic > 1000) {
+                            throw Error('123');
+                        }
                         workInProgress = performUnitOfWork(workInProgress);
                     }
                 } else {
