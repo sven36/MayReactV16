@@ -1,4 +1,4 @@
-import { getType, HostText, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, REACT_PORTAL_TYPE } from "../utils";
+import { getType, HostText, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, REACT_PORTAL_TYPE, NoEffect } from "../utils";
 // This is a constructor function, rather than a POJO constructor, still
 // please ensure we do the following:
 // 1) Nobody should add any instance methods on this. Instance methods can be
@@ -31,6 +31,12 @@ function FiberNode(tag, pendingProps, key, mode) {
     this.index = 0;
     this.pendingProps = pendingProps;
     this.mode = mode;
+    // Effects 判断该Node应该update还是delete
+    this.effectTag = NoEffect;
+    this.nextEffect = null;
+
+    this.firstEffect = null;
+    this.lastEffect = null;
 }
 let threadIDCounter = 0;
 

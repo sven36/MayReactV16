@@ -1,5 +1,5 @@
 import { createFiber, createChildFiber } from './MayFiber';
-import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent, noTimeout, Sync, PerformedWork, HostText } from '../utils';
+import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent, noTimeout, Sync, PerformedWork, HostText, ContentReset, Ref, Update, Deletion, PlacementAndUpdate } from '../utils';
 import { HostRoot, UpdateState, classComponentUpdater } from './scheduleWork';
 
 // Describes where we are in the React execution stack
@@ -11,6 +11,7 @@ let workInProgress = null;
 // The expiration time we're rendering
 let renderExpirationTime = 0;
 let NoWork = 0;
+let nextEffect = null;
 const RootIncomplete = 0;
 const RootErrored = 1;
 const RootSuspended = 2;
@@ -533,7 +534,67 @@ function performUnitOfWork(unitOfWork) {
     ReactCurrentOwner.current = null;
     return next;
 }
-let ic = 0;
+function isHostParent(fiber) {
+    return (
+        fiber.tag === HostComponent ||
+        fiber.tag === HostRoot ||
+        fiber.tag === HostPortal
+    );
+}
+function getHostParentFiber(fiber) {
+    let parent = fiber.return;
+    while (parent !== null) {
+        if (isHostParent(parent)) {
+            return parent;
+        }
+        parent = parent.return;
+    }
+}
+
+function getHostSibling(fiber) {
+    // We're going to search forward into the tree until we find a sibling host
+    // node. Unfortunately, if multiple insertions are done in a row we have to
+    // search past them. This leads to exponential search for the next sibling.
+    let node = fiber;
+
+    siblings: while (true) {
+        // If we didn't find anything, let's try the next sibling.
+        while (node.sibling === null) {
+            if (node.return === null || isHostParent(node.return)) {
+                // If we pop out of the root or hit the parent the fiber we are the
+                // last sibling.
+                return null;
+            }
+
+            node = node.return;
+        }
+
+        node.sibling.return = node.return;
+        node = node.sibling;
+
+        while (node.tag !== HostComponent && node.tag !== HostText && node.tag !== DehydratedSuspenseComponent) {
+            // If it is not host node and, we might have a host node inside it.
+            // Try to search down until we find one.
+            if (node.effectTag & Placement) {
+                // If we don't have a child, try the siblings instead.
+                continue siblings;
+            } // If we don't have a child, try the siblings instead.
+            // We also skip portals because they are not part of this host tree.
+
+
+            if (node.child === null || node.tag === HostPortal) {
+                continue siblings;
+            } else {
+                node.child.return = node;
+                node = node.child;
+            }
+        } // Check if this host node is stable or about to be placed.
+        if (!(node.effectTag & Placement)) {
+            // Found it!
+            return node.stateNode;
+        }
+    }
+}
 
 /**
  * append到contaier,处理生命周期，结束render流程
@@ -575,10 +636,90 @@ function commitRoot(root) {
         let prevInteractions;
         ReactCurrentOwner.current = null;
     }
+    //commitBeforeMutationEffects
+
+    //commitMutationEffects
     nextEffect = firstEffect;
     do {
         try {
-            nextEffect = null;
+            const effectTag = nextEffect.effectTag;
+            if (effectTag & ContentReset) {
+
+            }
+            if (effectTag & Ref) {
+
+            }
+            let primaryEffectTag = effectTag & (Placement | Update | Deletion);
+            switch (primaryEffectTag) {
+                case Placement:
+                    const parentFiber = getHostParentFiber(finishedWork);
+                    // Note: these two variables *must* always be updated together.
+                    let parent;
+                    let isContainer;
+                    switch (parentFiber.tag) {
+                        case HostComponent:
+                            parent = parentFiber.stateNode;
+                            isContainer = false;
+                            break;
+                        case HostRoot:
+                            parent = parentFiber.stateNode.containerInfo;
+                            isContainer = true;
+                            break;
+                        case HostPortal:
+                            parent = parentFiber.stateNode.containerInfo;
+                            isContainer = true;
+                            break;
+                        default:
+                            throw Error('Invalid host parent fiber');
+                    }
+                    const before = getHostSibling(finishedWork);
+                    let node = finishedWork;
+                    while (true) {
+                        if (node.tag === HostComponent || node.tag === HostText) {
+                            const stateNode = node.stateNode;
+                            if (before) {
+                                if (isContainer) {
+
+                                }
+                            } else {
+                                //COMMENTNODE情况
+                                // if (isContainer) {
+                                // }
+                                parent.appendChild(stateNode);
+                            }
+                        } else if (node.tag === HostPortal) {
+
+                        } else if (node.child !== null) {
+                            node.child.return = node;
+                            node = node.child;
+                            continue;
+                        }
+                        if (node === finishedWork) {
+                            return;
+                        }
+                        while (node.sibling === null) {
+                            if (node.return === null || node.return === finishedWork) {
+                                return;
+                            }
+                            node = node.return;
+                        }
+                        node.sibling.return = node.return;
+                        node = node.sibling;
+                    }
+                    nextEffect.effectTag &= ~Placement;
+                    break;
+
+                case PlacementAndUpdate:
+                    break;
+                case Update:
+                    const current = nextEffect.alternate;
+                    // commitWork()
+                    break;
+                case Deletion:
+                    break;
+            }
+
+            nextEffect = nextEffect.nextEffect;
         } catch (error) {
             throw Error('commit');
         }
@@ -596,10 +737,6 @@ function renderRoot(root, expirationTime, isSync) {
             try {
                 if (isSync) {
                     while (workInProgress !== null) {
-                        ic++;
-                        if (ic > 1000) {
-                            throw Error('123');
-                        }
                         workInProgress = performUnitOfWork(workInProgress);
                     }
                 } else {
