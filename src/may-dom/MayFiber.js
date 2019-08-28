@@ -1,4 +1,4 @@
-import { getType, HostText, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, REACT_PORTAL_TYPE, NoEffect } from "../utils";
+import { getType, HostText, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, REACT_PORTAL_TYPE, NoEffect, IndeterminateComponent, ClassComponent, HostComponent } from "../utils";
 // This is a constructor function, rather than a POJO constructor, still
 // please ensure we do the following:
 // 1) Nobody should add any instance methods on this. Instance methods can be
@@ -83,7 +83,7 @@ const createFiberFromTypeAndProps = function (type, key, pendingProps, owner, mo
     }
     fiber = createFiber(fiberTag, pendingProps, key, mode);
     fiber.elementType = fiber.type = type;
-    fiber.expirationTime = renderExpirationTime;
+    fiber.expirationTime = expirationTime;
     return fiber;
 }
 
@@ -110,7 +110,7 @@ const createChildFiber = function (parentFiber, newChild, expirationTime) {
                     const pendingProps = newChild.props;
                     const created = createFiberFromTypeAndProps(type, key, pendingProps, null, parentFiber.mode, expirationTime)
                     // created.ref = coerceRef(returnFiber, null, newChild);
-                    created.return = returnFiber;
+                    created.return = parentFiber;
                     return created;
 
                 case REACT_PORTAL_TYPE:

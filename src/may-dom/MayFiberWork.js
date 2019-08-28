@@ -275,6 +275,7 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
                     //effectTag标识该fiber需要进行什么操作 渲染root该fiber只需渲染即可Placement
                     fiber.effectTag = Placement;
                     // currentChild.child = fiber;
+                    return fiber;
                 }
                 break;
 
@@ -301,7 +302,7 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
         //无oldChild直接插入新的子元素即可
         if (oldFiber === null) {
             for (; newIndex < nextChildren.length; newIndex++) {
-                const newFiber = createChildFiber(parentFiber, nextChildren[newIndex], expirationTime);
+                const newFiber = createChildFiber(parentFiber, nextChildren[newIndex], renderExpirationTime);
                 if (newFiber === null) {
                     continue;
                 }
@@ -321,7 +322,7 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
 
 //深度优先至最深Node 添加子元素再上溯
 function appendChildren(parent, workInProgress, needsVisibilityToggle, isHidden) {
-    let node = workInProgress.child;
+    let node = workInProgress.child || null;
     while (node !== null) {
         if (node.tag === HostComponent || node.tag === HostText) {
 
@@ -343,7 +344,7 @@ function updateHostRoot(current, workInProgress, renderExpirationTime) {
     if (nextChildren === prevChildren) {
 
     } else {
-        reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime);
+        workInProgress.child = reconcileChildren(workInProgress, current.child, nextChildren, renderExpirationTime);
     }
     return workInProgress.child;
 }
@@ -384,6 +385,9 @@ function beginWork(current, workInProgress, renderExpirationTime) {
                 //     currentInstance.state !== null && currentInstance.state !== undefined
                 //         ? currentInstance.state
                 //         : null);
+                if (instance.state) {
+                    workInProgress.memoizedState = instance.state;
+                }
                 instance.updater = classComponentUpdater;
                 //stateNode包含state的Node,Fiber是链表Node,保存该node,diff,渲染等信息,stateNode则是用户操作render之后的ReactElement
                 workInProgress.stateNode = instance;
@@ -404,7 +408,7 @@ function beginWork(current, workInProgress, renderExpirationTime) {
                 workInProgress.effectTag |= PerformedWork;
                 if (current === null) {
                     //第一次render current为null
-                    reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
+                    workInProgress.child = reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
                 }
                 workInProgress.memoizedState = instance.state;
                 return workInProgress.child;
@@ -428,7 +432,7 @@ function beginWork(current, workInProgress, renderExpirationTime) {
             }
             //  markRef(current, workInProgress);
             if (current === null) {
-                reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
+                workInProgress.child = reconcileChildren(workInProgress, null, nextChildren, renderExpirationTime);
             }
             // reconcileChildren(current, workInProgress, nextChildren, renderExpirationTime);
             return workInProgress.child;
@@ -463,7 +467,7 @@ function completeWork(current, workInProgress, renderExpirationTime) {
 
             //popHostContext 清除当前Context
             //rootContainerInstance是保存在全局的Container
-            const rootContainerInstance = container;
+            const rootContainerInstance = window.__container;
             const type = workInProgress.type;
             let parentNameSpace = "http://www.w3.org/1999/xhtml";
             const domElement = document.createElement(type);
@@ -482,7 +486,7 @@ function performUnitOfWork(unitOfWork) {
     //beginWork 返回的是workInProgress的child 即递归向下遍历（默认情况）
     let next = beginWork(current, unitOfWork, renderExpirationTime);
     unitOfWork.memoizedProps = unitOfWork.pendingProps;
-    if (next === null) {
+    if (!next) {
         //completeUnitOfWork
         //最深处Node 深度优先递归回归
         workInProgress = unitOfWork;
@@ -491,6 +495,7 @@ function performUnitOfWork(unitOfWork) {
             //链表上一级 parentNode
             const returnFiber = workInProgress.return;
             if ((workInProgress.effectTag & Incomplete) === NoEffect) {
+                debugger
                 next = completeWork(current, workInProgress, renderExpirationTime);
                 if (next !== null) {
                     return next;
@@ -510,15 +515,15 @@ function performUnitOfWork(unitOfWork) {
                     // list. PerformedWork effect is read by React DevTools but shouldn't be
                     // committed.
 
-                    if (effectTag > PerformedWork) {
-                        if (returnFiber.lastEffect !== null) {
-                            returnFiber.lastEffect.nextEffect = workInProgress;
-                        } else {
-                            returnFiber.firstEffect = workInProgress;
-                        }
+                    // if (effectTag > PerformedWork) {
+                    //     if (returnFiber.lastEffect !== null) {
+                    //         returnFiber.lastEffect.nextEffect = workInProgress;
+                    //     } else {
+                    //         returnFiber.firstEffect = workInProgress;
+                    //     }
 
-                        returnFiber.lastEffect = workInProgress;
-                    }
+                    //     returnFiber.lastEffect = workInProgress;
+                    // }
                 }
             }
             const siblingFiber = workInProgress.sibling;

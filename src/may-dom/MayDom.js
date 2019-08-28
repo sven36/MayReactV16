@@ -5,6 +5,7 @@ import { LegacyRoot } from '../utils';
 function render(element, container, callback) {
     let root = container._reactRootContainer;
     let fiberRoot;
+    window.__container = container;
     if (!root) {
         //forceHydrate Hydrate true render false
 
