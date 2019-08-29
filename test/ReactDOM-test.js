@@ -73,7 +73,6 @@ describe('may2.js', () => {
 
             }
         }
-        debugger
         ReactDOM.render(<Parent />, container);
         expect(console.error.calls.count()).toBe(0);
     });

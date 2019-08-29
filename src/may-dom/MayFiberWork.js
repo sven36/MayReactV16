@@ -1,5 +1,5 @@
 import { createFiber, createChildFiber } from './MayFiber';
-import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent, noTimeout, Sync, PerformedWork, HostText, ContentReset, Ref, Update, Deletion, PlacementAndUpdate } from '../utils';
+import { IndeterminateComponent, ClassComponent, Callback, REACT_ELEMENT_TYPE, REACT_FRAGMENT_TYPE, HostComponent, Placement, ReactCurrentOwner, Incomplete, NoEffect, LazyComponent, SimpleMemoComponent, FunctionComponent, noTimeout, Sync, PerformedWork, HostText, ContentReset, Ref, Update, Deletion, PlacementAndUpdate, HostPortal } from '../utils';
 import { HostRoot, UpdateState, classComponentUpdater } from './scheduleWork';
 
 // Describes where we are in the React execution stack
@@ -79,7 +79,7 @@ function setInitialProperties(domElement, tag, nextProps, rootContainerElement, 
     for (const key in nextProps) {
         if (nextProps.hasOwnProperty(key)) {
             const nextProp = nextProps[key];
-            switch (nextProp) {
+            switch (key) {
                 case 'style':
 
                     break;
@@ -91,7 +91,7 @@ function setInitialProperties(domElement, tag, nextProps, rootContainerElement, 
                         let canSetTextContent = tag !== 'textarea' || nextProp !== '';
 
                         if (canSetTextContent) {
-                            domElement.textContent = text;
+                            domElement.textContent = nextProp;
                             // if (text) {
                             //     var firstChild = node.firstChild;
 
@@ -325,8 +325,25 @@ function appendChildren(parent, workInProgress, needsVisibilityToggle, isHidden)
     let node = workInProgress.child || null;
     while (node !== null) {
         if (node.tag === HostComponent || node.tag === HostText) {
+            parent.appendChild(node.stateNode);
+        } else if (node.tag === HostPortal) {
 
+        } else if (node.child !== null) {
+            node.child.return = node;
+            node = node.child;
+            continue;
         }
+        if (node === workInProgress) {
+            return;
+        }
+        while (node.sibling === null) {
+            if (node.return === null || node.return == workInProgress) {
+                return;
+            }
+            node = node.return;
+        }
+        node.sibling.return = node.return;
+        node = node.sibling;
     }
 }
 
@@ -461,7 +478,13 @@ function completeWork(current, workInProgress, renderExpirationTime) {
         }
         case HostRoot:
             const fiberRoot = workInProgress.stateNode;
-
+            if (fiberRoot.pendingContext) {
+                fiberRoot.context = fiberRoot.pendingContext;
+                fiberRoot.pendingContext = null;
+            }
+            if (current === null || current.child === null) {
+                workInProgress.effectTag &= ~Placement;
+            }
             break;
         case HostComponent:
 
