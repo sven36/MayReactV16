@@ -22,9 +22,9 @@ function render(element, container, callback) {
         if (typeof callback === 'function') {
             //TODO 有回调添加回调
         }
-        unbatchedUpdates(() => {
-            updateContainer(element, fiberRoot, null, callback);
-        })
+        // unbatchedUpdates(() => {
+        updateContainer(element, fiberRoot, null, callback);
+        // })
     }
 }
 let MayDom = {

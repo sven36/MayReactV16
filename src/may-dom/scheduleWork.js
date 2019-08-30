@@ -256,7 +256,7 @@ function scheduleWork(fiber, expirationTime) {
 
     }
     let callback = renderRoot(root, Sync, true);
-    while (callback !== null) {
+    while (callback) {
         callback = callback(true);
     }
 }

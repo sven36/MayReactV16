@@ -273,6 +273,9 @@ function reconcileChildren(parentFiber, currentChild, nextChildren, renderExpira
                     //链表结构
                     fiber.return = parentFiber;
                     //effectTag标识该fiber需要进行什么操作 渲染root该fiber只需渲染即可Placement
+                    if (fiber) {
+
+                    }
                     fiber.effectTag = Placement;
                     // currentChild.child = fiber;
                     return fiber;
@@ -518,7 +521,6 @@ function performUnitOfWork(unitOfWork) {
             //链表上一级 parentNode
             const returnFiber = workInProgress.return;
             if ((workInProgress.effectTag & Incomplete) === NoEffect) {
-                debugger
                 next = completeWork(current, workInProgress, renderExpirationTime);
                 if (next !== null) {
                     return next;
@@ -538,15 +540,15 @@ function performUnitOfWork(unitOfWork) {
                     // list. PerformedWork effect is read by React DevTools but shouldn't be
                     // committed.
 
-                    // if (effectTag > PerformedWork) {
-                    //     if (returnFiber.lastEffect !== null) {
-                    //         returnFiber.lastEffect.nextEffect = workInProgress;
-                    //     } else {
-                    //         returnFiber.firstEffect = workInProgress;
-                    //     }
+                    if (effectTag > Placement) {
+                        if (returnFiber.lastEffect !== null) {
+                            returnFiber.lastEffect.nextEffect = workInProgress;
+                        } else {
+                            returnFiber.firstEffect = workInProgress;
+                        }
 
-                    //     returnFiber.lastEffect = workInProgress;
-                    // }
+                        returnFiber.lastEffect = workInProgress;
+                    }
                 }
             }
             const siblingFiber = workInProgress.sibling;
@@ -680,7 +682,7 @@ function commitRoot(root) {
             let primaryEffectTag = effectTag & (Placement | Update | Deletion);
             switch (primaryEffectTag) {
                 case Placement:
-                    const parentFiber = getHostParentFiber(finishedWork);
+                    const parentFiber = getHostParentFiber(nextEffect);
                     // Note: these two variables *must* always be updated together.
                     let parent;
                     let isContainer;
@@ -700,8 +702,8 @@ function commitRoot(root) {
                         default:
                             throw Error('Invalid host parent fiber');
                     }
-                    const before = getHostSibling(finishedWork);
-                    let node = finishedWork;
+                    const before = getHostSibling(nextEffect);
+                    let node = nextEffect;
                     while (true) {
                         if (node.tag === HostComponent || node.tag === HostText) {
                             const stateNode = node.stateNode;
