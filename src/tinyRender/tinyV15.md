@@ -68,3 +68,44 @@ class Node {
 
 ``` 
 
+``` javascript
+
+requestIdleCallback((deadline)=>{
+
+    //timeRemaining当前帧剩余的时间，也可理解为留给任务的时间还有多少
+    //表示任务是否超时
+    console.log(deadline.timeRemaining(), deadline.didTimeout)
+
+}); 
+
+function workLoop() {
+
+    while (nextUnitOfWork !== null) {
+        nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    }
+
+}
+
+requestIdleCallback((deadline) => {
+
+    // while we have time, perform work for a part of the components tree
+    while ((deadline.timeRemaining() > 0 || deadline.didTimeout) && nextUnitOfWork) {
+        nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    }
+
+}); 
+
+``` 
+
+``` javascript
+
+function workLoop() {
+
+    while (nextUnitOfWork !== null&& !shouldYield()) {
+        nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    }
+
+}
+
+``` 
+
