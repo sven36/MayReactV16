@@ -73,7 +73,7 @@ describe('may2.js', () => {
 
             }
         }
-        ReactDOM.render(<Parent />, container);
+        // ReactDOM.render(<Parent />, container);
         expect(console.error.calls.count()).toBe(0);
     });
 

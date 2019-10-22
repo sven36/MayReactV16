@@ -21,16 +21,18 @@ class A {
 ```
 
 ``` javascript
-
 [
 
     {
         $typeof: Symbol(react.element),
         type: A,
         props: {
-            children: [
-                {$typeof: ...},
-                {$typeof: ...}
+            children: [{
+                    $typeof: ...
+                },
+                {
+                    $typeof: ...
+                }
             ]
         }
     },
@@ -39,7 +41,7 @@ class A {
         type: 'div',
         key: "B1",
         props: {
-            children: ['C1','C2']
+            children: ['C1', 'C2']
         }
     },
     {
@@ -52,6 +54,7 @@ class A {
 ]
 
 ``` 
+
 
 ``` javascript
 
@@ -107,5 +110,8 @@ function workLoop() {
 
 }
 
-``` 
+```
+
+
+
 

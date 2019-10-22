@@ -52,8 +52,50 @@ describe('may.js', () => {
 
 			}
 		}
+		// debugger
+		// ReactDOM.render(<Parent />, container);
+		expect(console.error.calls.count()).toBe(0);
+	});
+
+
+})
+describe('A.js', () => {
+	it('A-render', () => {
+		spyOn(console, 'error');
+		var container = document.createElement('div');
+		document.body.appendChild(container);
+		class Child extends React.Component {
+
+
+			render() {
+				return (
+					<div>
+						{this.props.val}
+					</div>);
+			}
+		}
+		class A extends React.Component {
+			constructor() {
+				super();
+				this.state = { val: 'C2' };
+			}
+			Change = () => {
+				this.setState({ val: 'C3' });
+			}
+			render() {
+				return (
+					<React.Fragment>
+						<div className="mystyle" onClick={this.Change} key='B1'>
+							{'C1'}
+							{this.state.val}
+						</div>
+						B2
+					</React.Fragment>
+				);
+			}
+		}
 		debugger
-		ReactDOM.render(<Parent />, container);
+		ReactDOM.render(<A />, container);
 		expect(console.error.calls.count()).toBe(0);
 	});
 

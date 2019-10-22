@@ -19,4 +19,26 @@ let React = {
 }
 
 }
+
+// class A extends React.Component {
+//     constructor() {
+//         super();
+//         this.state = { val: 'C2' };
+//     }
+//     Change = () => {
+//         this.setState({ val: 'C3' });
+//     }
+//     render() {
+//         return (
+//             <React.Fragment>
+//                 <div className="mystyle" onClick={this.Change} key='B1'>
+//                     {'C1'}
+//                     {this.state.val}
+//                 </div>
+//                 B2
+//             </React.Fragment>
+//         );
+//     }
+// }
+// ReactDOM.render(<A />, container);
 export default React;
