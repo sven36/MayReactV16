@@ -1,3 +1,28 @@
+
+
+{
+    effectTag: 4,
+    elementType: class A,
+    firstEffect: null,
+    memoizedState: {val: "C2"},
+    type: class ClickCounter,
+    stateNode: {
+        state: {count: 1}
+    },
+    updateQueue: {
+        baseState: {count: 1},
+        firstUpdate: null,
+        ...
+    }
+}
+
+
+
+
+
+
+
+
 function Component(props, context, updater) {
     this.props = props;
     this.context = context;

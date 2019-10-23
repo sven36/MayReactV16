@@ -43,14 +43,7 @@ class A {
         props: {
             children: ['C1', 'C2']
         }
-    },
-    {
-        $typeof: Symbol(react.element),
-        type: 'div',
-        key: "B2",
-        props: null
     }
-
 ]
 
 ``` 
