@@ -1,0 +1,16 @@
+/nbproject/private/
+/node_modules/*
+/md/*
+/coverage/
+package-lock.json
+node_modules/
+chromedriver
+selenium-server-*
+/.vscode/*
+/.history/*
+xxx.js
+index.css
+stand.js
+
+.DS_Store
+packages/cli/packages/lib/
