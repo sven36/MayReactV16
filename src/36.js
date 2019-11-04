@@ -79,14 +79,46 @@
  * @return {boolean}
  */
 var isValidSudoku = function (board) {
-    let res = false;
-    let blocks = [];
+    let numObj = {};
+    let res = true;
     for (let i = 0; i < board.length; i++) {
-        const line = board[i];
-        if(i%3===0){
-            blocks[i%3];
+        const arr = board[i];
+        for (let j = 0; j < arr.length; j++) {
+            const char = arr[j];
+            if (char !== '.') {
+                if (!numObj[char]) {
+                    numObj[char] = [{ i, j }];
+                } else {
+                    res = numObj[char].every(obj => {
+                        if (obj.i === i || obj.j === j) {
+                            return false;
+                        }
+                        if (Math.abs((i - obj.i)) <= 2 && Math.abs((j - obj.j)) <= 2) {
+                            return false;
+                        }
+                        return true;
+                    });
+                    if (!res) {
+                        return res;
+                    }
+                    numObj[char].push({ i, j });
+                }
+            }
         }
     }
+    return res;
 };
+let tes = [
+    ["5", "3", ".", ".", "7", ".", ".", ".", "."],
+    ["6", ".", ".", "1", "9", "5", ".", ".", "."],
+    [".", "9", "8", ".", ".", ".", ".", "6", "."],
+    ["8", ".", ".", ".", "6", ".", ".", ".", "3"],
+    ["4", ".", ".", "8", ".", "3", ".", ".", "1"],
+    ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
+    [".", "6", ".", ".", ".", ".", "2", "8", "."],
+    [".", ".", ".", "4", "1", "9", ".", ".", "5"],
+    [".", ".", ".", ".", "8", ".", ".", "7", "9"]
+];
+isValidSudoku(tes);
 // @lc code=end
 
