@@ -61,29 +61,38 @@
  */
 var isValidBST = function (root) {
     let res = true;
-    function walk(node, preVal, l) {
+    let preVal = null;
+    function walk(node) {
         if (node) {
-            let val = node.val;
-            if (l === 1) {
-                //left <
-                if (val >= preVal) {
-                    return false;
-                }
-            } else if (l === 0) {
-                //right
-                if (val <= preVal) {
-                    return false;
-                }
+            if (walk(node.left) === false) {
+                return false;
             }
-            walk(node.left, val, 1);
-            walk(node.right, val, 0);
+            let val = node.val;
+            if (preVal !== null && preVal >= val) {
+                return false;
+            }
+            preVal = val;
+            if (walk(node.right) === false) {
+                return false;
+            }
+            return true;
         } else {
             return true;
         }
     }
-    res = walk(root, null, -1) || true;
+    res = walk(root);
     return res;
 
 };
+// let r = {
+//     val: 10,
+//     left: { val: 10, left: null, right: null },
+//     // right: {
+//     //     val: 15,
+//     //     left: { val: 6, left: null, right: null },
+//     //     right: { val: 20, left: null, right: null }
+//     // }
+// }
+// isValidBST(r);
 // @lc code=end
 
