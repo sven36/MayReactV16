@@ -6,10 +6,10 @@
  * https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/description/
  *
  * algorithms
- * Medium (65.75%)
+ * Medium (65.90%)
  * Likes:    202
  * Dislikes: 0
- * Total Accepted:    17.4K
+ * Total Accepted:    17.5K
  * Total Submissions: 26.5K
  * Testcase Example:  '[1,2,5,3,4,null,6]'
  *
@@ -52,13 +52,14 @@
  * @return {void} Do not return anything, modify root in-place instead.
  */
 var flatten = function (root) {
-    let prev = root;
+    let prev = null;
     function walk(node) {
         if (node) {
-            prev.next = node;
-            prev = node;
-            walk(node.left);
             walk(node.right);
+            walk(node.left);
+            node.right = prev;
+            node.left = null;
+            prev = node;
         } else {
             return null;
         }
