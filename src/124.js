@@ -54,8 +54,20 @@
  * @param {TreeNode} root
  * @return {number}
  */
-var maxPathSum = function(root) {
-    
+var maxPathSum = function (root) {
+    let max = -Infinity;
+    function walk(node) {
+        if (node) {
+            let l = Math.max(walk(node.left), 0);
+            let r = Math.max(walk(node.right), 0);
+            max = Math.max(max, node.val + l + r);
+            return node.val + Math.max(l, r);
+        } else {
+            return 0;
+        }
+    }
+    walk(root);
+    return max;
 };
 // @lc code=end
 
