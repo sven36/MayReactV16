@@ -53,8 +53,18 @@
  * @param {TreeNode} root
  * @return {string}
  */
-var serialize = function(root) {
-    
+var serialize = function (root) {
+    let res = '';
+    function walk(node) {
+        if (node) {
+            walk(node.left);
+            walk(node.right);
+        } else {
+            return '';
+        } 
+    }
+    walk(root);
+    return res;
 };
 
 /**
@@ -63,8 +73,8 @@ var serialize = function(root) {
  * @param {string} data
  * @return {TreeNode}
  */
-var deserialize = function(data) {
-    
+var deserialize = function (data) {
+
 };
 
 /**
