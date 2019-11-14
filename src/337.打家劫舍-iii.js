@@ -61,46 +61,34 @@
  * @return {number}
  */
 var rob = function (root) {
-    let i = 0;
-    let arr = [];
+    function TreeNode(val) {
+        this.val = val;
+        this.left = this.right = null;
+    }
     function walk(node) {
-        i++;
         if (node) {
-            if (!arr[i]) {
-                arr[i] = [node.val];
-            } else {
-                arr[i].push(node.val);
+            if (!node.left && !node.right) {
+                node.left = new TreeNode(0);
+                node.right = new TreeNode(0);
+                return node;
             }
-            walk(node.left);
-            walk(node.right);
+            node.left = walk(node.left);
+            node.right = walk(node.right);
+
+            let l = node.val + node.left.left.val + node.left.right.val + node.right.right.val + node.right.left.val;
+            let r = node.left.val + node.right.val;
+            node.val = Math.max(l, r);
+            return node;
         } else {
-            return '';
+            return walk(new TreeNode(0));
         }
-        i--;
     }
-    walk(root);
-    let sum1 = sum2 = 0;
-    let j = 1;
-    let m = n = 0;
-    for (let i = 0; i < arr.length; i += 2) {
-        if (arr[i]) {
-            arr[i].forEach(e => {
-                m += e;
-            });
-        }
-        if (arr[j]) {
-            arr[j].forEach(e => {
-                n += e;
-            });
-        }
-        j += 2;
-    }
-    return Math.max(m, n);
+    return walk(root).val;
 };
 // let r = {
-//     val: 3,
+//     val: 4,
 //     left: { val: 2, left: null, right: { val: 3, left: null, right: null } },
-//     right: { val: 3, left: null, right: { val: 1, left: null, right: null } }
+//     right: { val: 5, left: null, right: { val: 1, left: null, right: null } }
 // }
 // rob(r);
 // @lc code=end
