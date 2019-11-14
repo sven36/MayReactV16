@@ -63,35 +63,28 @@
  * @return {TreeNode}
  */
 var lowestCommonAncestor = function (root, p, q) {
-    let res = null;
-    let arr = [];
-    let s = false
-    function walk(node) {
-        if (node) {
-            walk(node.left);
-            if (node === p) {
-                s = true;
-            } else if (node === q) {
-                arr.push(node);
-                s = false;
-            }
-            if (s) {
-                arr.push(node);
-            }
-            walk(node.right);
-        }
-    }
-    walk(root);
-    if (arr.length === 2) {
-        if (arr[0].val >= arr[1].val) {
-            res = arr[0];
+    let node = root;
+    let l = p.val;
+    let r = q.val;
+    while (node) {
+        if (l > node.val && r > node.val) {
+            node = node.right;
+        } else if (l < node.val && r < node.val) {
+            node = node.left;
         } else {
-            res = arr[1];
+            return node;
         }
-    } else {
-        res = arr[Math.floor(arr.length / 2)];
     }
-    return res;
+
+    return null;
 };
+// let l1 = { val: 2, left: null, right: null };
+// let l2 = { val: 8, left: null, right: null };
+// let r = {
+//     val: 6,
+//     left: l1,
+//     right: l2,
+// }
+// lowestCommonAncestor(r, l1, l2)
 // @lc code=end
 
