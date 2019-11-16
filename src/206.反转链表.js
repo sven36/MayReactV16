@@ -37,8 +37,16 @@
  * @param {ListNode} head
  * @return {ListNode}
  */
-var reverseList = function(head) {
-    
+var reverseList = function (head) {
+    if (head === null || head.next === null) {
+        return head;
+    }
+    let node = reverseList(head.next);
+    head.next.next = head;
+    head.next = null;
+    return node;
 };
+// let r = { val: 1, next: { val: 2, next: { val: 3, next: null } } }
+// reverseList(r);
 // @lc code=end
 
