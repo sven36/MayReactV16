@@ -41,41 +41,66 @@
  * @return {void} Do not return anything, modify head in-place instead.
  */
 var reorderList = function (head) {
-    let arr = [];
-    while (head) {
-        arr.push(head);
-        head = head.next;
+    // return if only 1 or 2 node in the list
+    if (head === null || head.next === null) return;
+
+    //O(n)
+    // use p1 & p2 find the middle node of the linked list
+    let p1 = head,
+        p2 = head;
+    // split list to two parts. e.g. 123,45 or 12,34;    
+    while (p1.next && p2.next && p2.next.next) {
+        p1 = p1.next;
+        p2 = p2.next.next;
     }
-    let len = arr.length;
-    for (let i = 0; i < len; i += 2) {
-        let l = arr[i];
-        let n = arr[i + 1] || null;
-        let r = arr[len - i - 1];
-        l.next = r;
-        r.next = n;
+    p2 = p1.next;
+    p1.next = null;
+    p1 = head;
+
+    //O(n)
+    // revert p2
+    let curr = p2,
+        pre = null;
+    while (curr !== null) {
+        let tmp = curr.next;
+        curr.next = pre;
+        pre = curr;
+        curr = tmp
     }
-    return arr[0];
+    // set p2 head
+    p2 = pre;
+
+    //O(n)
+    // combine p1 & p2;
+    while (p2 !== null) {
+        let next1 = p1.next,
+            next2 = p2.next;
+        p1.next = p2;
+        p2.next = next1;
+        p1 = next1;
+        p2 = next2;
+    }
 };
 // let l5 = {
 //     val: 5,
 //     next: null
 // }
-let l4 = {
-    val: 4,
-    next: null
-}
-let l3 = {
-    val: 3,
-    next: l4
-}
-let l2 = {
-    val: 2,
-    next: l3
-}
-let l1 = {
-    val: 1,
-    next: l2
-}
-reorderList(l1);
+// let l4 = {
+//     val: 4,
+//     next: null
+// }
+// let l3 = {
+//     val: 3,
+//     next: l4
+// }
+// let l2 = {
+//     val: 2,
+//     next: l3
+// }
+// let l1 = {
+//     val: 1,
+//     next: l2
+// }
+// reorderList(l1);
 // @lc code=end
 
