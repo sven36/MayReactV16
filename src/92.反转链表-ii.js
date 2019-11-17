@@ -42,16 +42,23 @@
 var reverseBetween = function (head, m, n) {
     let l = null;
     let r = null;
-    let i = 0;
-    while (head) {
+    let p = null;
+    let i = -1;
+    let fake = new ListNode(0);
+    fake.next = head;
+    let s = fake;
+    while (fake) {
         i++;
         if (i === m - 1) {
-            l = head;
+            p = fake;
+        }
+        if (i === m) {
+            l = fake;
         }
         if (i === n) {
-            r = head;
+            r = fake;
         }
-        head = head.next;
+        fake = fake.next;
     }
     let end = r.next;
     r.next = null;
@@ -64,30 +71,31 @@ var reverseBetween = function (head, m, n) {
         n.next = null;
         return node;
     };
-    let res = reverseList(l);
-    res.next = end;
-    return head;
+    reverseList(l);
+    l.next = end;
+    p && (p.next = r);
+    return s.next;
 };
-let l5 = {
-    val: 5,
-    next: null
-}
-let l4 = {
-    val: 4,
-    next: l5
-}
-let l3 = {
-    val: 3,
-    next: l4
-}
-let l2 = {
-    val: 2,
-    next: l3
-}
-let l1 = {
-    val: 1,
-    next: l2
-}
-reverseBetween(l1, 2, 4);
+// let l5 = {
+//     val: 5,
+//     next: null
+// }
+// let l4 = {
+//     val: 4,
+//     next: l5
+// }
+// let l3 = {
+//     val: 3,
+//     next: l4
+// }
+// let l2 = {
+//     val: 5,
+//     next: null
+// }
+// let l1 = {
+//     val: 3,
+//     next: l2
+// }
+// reverseBetween(l1, 1, 2);
 // @lc code=end
 
