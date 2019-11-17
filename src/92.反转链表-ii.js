@@ -40,28 +40,33 @@
  * @return {ListNode}
  */
 var reverseBetween = function (head, m, n) {
-    let i = j = 0;
-    let node = head;
-    while (node) {
+    let l = null;
+    let r = null;
+    let i = 0;
+    while (head) {
         i++;
         if (i === m - 1) {
-            node = reverseNode(node);
-            break;
+            l = head;
         }
-        node = node.next;
-    }
-    function reverseNode(node) {
-        j++;
-        if (node === null || j === (n - m + 2)) {
-            return node;
+        if (i === n) {
+            r = head;
         }
-        let res = reverseNode(node.next);
-        let temp = res.next;
-        res.next = node;
-        node.next = temp;
-        return res;
+        head = head.next;
     }
-    return head
+    let end = r.next;
+    r.next = null;
+    var reverseList = function (n) {
+        if (n === null || n.next === null) {
+            return n;
+        }
+        let node = reverseList(n.next);
+        n.next.next = n;
+        n.next = null;
+        return node;
+    };
+    let res = reverseList(l);
+    res.next = end;
+    return head;
 };
 let l5 = {
     val: 5,

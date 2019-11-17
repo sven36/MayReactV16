@@ -1,38 +1,38 @@
 /*
- * @lc app=leetcode.cn id=25 lang=javascript
+ * @lc app=leetcode.cn id=61 lang=javascript
  *
- * [25] K 个一组翻转链表
+ * [61] 旋转链表
  *
- * https://leetcode-cn.com/problems/reverse-nodes-in-k-group/description/
+ * https://leetcode-cn.com/problems/rotate-list/description/
  *
  * algorithms
- * Hard (54.99%)
- * Likes:    297
+ * Medium (39.40%)
+ * Likes:    172
  * Dislikes: 0
- * Total Accepted:    27.3K
- * Total Submissions: 49.7K
+ * Total Accepted:    32.5K
+ * Total Submissions: 82.5K
  * Testcase Example:  '[1,2,3,4,5]\n2'
  *
- * 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+ * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
  * 
- * k 是一个正整数，它的值小于或等于链表的长度。
+ * 示例 1:
  * 
- * 如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
- * 
- * 示例 :
- * 
- * 给定这个链表：1->2->3->4->5
- * 
- * 当 k = 2 时，应当返回: 2->1->4->3->5
- * 
- * 当 k = 3 时，应当返回: 3->2->1->4->5
- * 
- * 说明 :
+ * 输入: 1->2->3->4->5->NULL, k = 2
+ * 输出: 4->5->1->2->3->NULL
+ * 解释:
+ * 向右旋转 1 步: 5->1->2->3->4->NULL
+ * 向右旋转 2 步: 4->5->1->2->3->NULL
  * 
  * 
- * 你的算法只能使用常数的额外空间。
- * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+ * 示例 2:
  * 
+ * 输入: 0->1->2->NULL, k = 4
+ * 输出: 2->0->1->NULL
+ * 解释:
+ * 向右旋转 1 步: 2->0->1->NULL
+ * 向右旋转 2 步: 1->2->0->NULL
+ * 向右旋转 3 步: 0->1->2->NULL
+ * 向右旋转 4 步: 2->0->1->NULL
  * 
  */
 
@@ -49,7 +49,7 @@
  * @param {number} k
  * @return {ListNode}
  */
-var reverseKGroup = function (head, k) {
+var rotateRight = function (head, k) {
     // let start = null;
     // let res = [];
     // while (head) {
