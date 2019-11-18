@@ -42,34 +42,60 @@
  * @return {ListNode}
  */
 var addTwoNumbers = function (l1, l2) {
-    let l = l1;
-    let r = l2;
-    let isAdd = false;
-    let res = null;
-    let prev = null;
-    while (l) {
-        let i = l.val;
-        let j = r.val;
-        let node = null;
-        let sum = i + j;
-        if (isAdd) {
-            sum += 1;
-            isAdd = false;
-        }
-        if (sum >= 10) {
-            node = new ListNode(sum - 10);
-            isAdd = true;
-            if (!res) {
-                res = node;
-            }
-        } else {
-            node = new ListNode(sum);
-        }
-        if (prev) {
-            prev.next = node;
-        }
-        prev = node;
+    if (!l1 || !l2) {
+        return;
     }
+    let res = new ListNode(0);
+    let root = res;
+    let isAdd = 0;
+    while (l1 || l2 || isAdd) {
+        let l1Val = 0;
+        if (l1) {
+            l1Val = l1.val;
+            l1 = l1.next;
+        }
+        let l2Val = 0;
+        if (l2) {
+            l2Val = l2.val;
+            l2 = l2.next;
+        }
+        let allVal = l1Val + l2Val + isAdd;
+        if (allVal > 9) {
+            isAdd = 1;
+        } else {
+            isAdd = 0;
+        }
+        res.next = new ListNode(allVal % 10);
+        res = res.next;
+    }
+
+    return root.next;
 };
 // @lc code=end
+
+
+// Josephus Problem
+function problem(nums, k) {
+    function ListNode(num) {
+        this.val = num;
+        this.next = null;
+    }
+    let s = new ListNode(nums[0]);
+    let r = s;
+    for (let i = 1; i < nums.length; i++) {
+        s.next = new ListNode(nums[i]);
+        s = s.next;
+    }
+    let n = 0;
+    let prev = null;
+    while (r) {
+        n++;
+
+        if (n % k === 0) {
+            
+        }
+        prev = r;
+        r = r.next;
+    }
+}
 

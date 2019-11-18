@@ -50,12 +50,52 @@
  * @return {ListNode}
  */
 var oddEvenList = function (head) {
-    let l = head;
-    let m = head.next;
-    let n = head.next.next;
-    while (l && m && n) {
-        
+    // let s = head;
+    // let l = head;
+    // //上一个
+    // let m = head;
+    // let n = head;
+    // let i = 0;
+    // while (head && m) {
+    //     i++;
+    //     if (i > 1 && (i & 1)) {
+    //         //奇数
+    //         //节点下一个
+    //         n = head.next;
+    //         m.next = n;
+
+    //         let temp = l.next;
+    //         head.next = temp;
+    //         l.next = head;
+
+    //         l = l.next;
+    //         head = m;
+    //     }
+
+    //     m = head;
+    //     head = head.next;
+    // }
+    // return s;
+
+    if (!head) {
+        return null;
     }
+
+    let odd = head;
+    let even = head.next;
+    let s = even;
+
+    while (even && even.next) {
+
+        odd.next = even.next;
+        even.next = even.next.next;
+        odd = odd.next;
+        even = even.next;
+    }
+    odd.next = s;
+    return head;
 };
+// let rs = { val: 1, next: { val: 2, next: { val: 3, next: { val: 4, next: { val: 5, next: null } } } } };
+// oddEvenList(rs);
 // @lc code=end
 
