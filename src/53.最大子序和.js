@@ -33,8 +33,19 @@
  * @param {number[]} nums
  * @return {number}
  */
-var maxSubArray = function(nums) {
-    
+var maxSubArray = function (nums) {
+    let max = sum = 0;
+    max = nums[0];
+    for (let i = 0; i < nums.length; i++) {
+        let num = nums[i];
+        if (sum > 0) {
+            sum += num;
+        } else {
+            sum = num;
+        }
+        max = Math.max(max, sum);
+    }
+    return max;
 };
 // @lc code=end
 
