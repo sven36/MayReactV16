@@ -45,10 +45,28 @@
  * @return {number}
  */
 var numDecodings = function (s) {
-    let obj = {
-        'A': 1,
-        'B': 2,
+    function helper(str, i) {
+        let len = str.length;
+        if (len === i) {
+            return 1;
+        }
+        if (s[i] === '0') {
+            return 0;
+        }
+
+        let l = helper(str, i + 1);
+        let r = 0;
+        if (i < len - 1) {
+            let ten = parseInt(str[i], 10) * 10;
+            let one = parseInt(str[i + 1], 10);
+            if (ten + one <= 26) {
+                r = helper(str, i + 2);
+            }
+        }
+        return l + r;
     }
+    return helper(s, 0);
 };
+// numDecodings('27');
 // @lc code=end
 
