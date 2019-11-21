@@ -35,8 +35,49 @@
  * @param {string} digits
  * @return {string[]}
  */
-var letterCombinations = function(digits) {
-    
+var letterCombinations = function (digits) {
+    // let obj = {
+    //     '2': ['a', 'b', 'c'],
+    //     '3': ['d', 'e', 'f'],
+    //     '4': ['g', 'h', 'i'],
+    //     '5': ['j', 'k', 'l'],
+    //     '6': ['m', 'n', 'o'],
+    //     '7': ['p', 'q', 'r', 's'],
+    //     '8': ['t', 'u', 'v'],
+    //     '9': ['w', 'x', 'y', 'z']
+    // }
+    // let res = [];
+    // let arr = [];
+    // for (let i = 0; i < digits.length; i++) {
+    //     const char = digits[i];
+    //     arr.push(obj[char]);
+    // }
+
+    // for (let m = 0; m < 4; m++) {
+    //     for (let n = 0; n < arr.length; n++) {
+    //         arr[n][m];
+
+    //     }
+
+    // }
+    if (!digits) return [];
+    const arr = [['a', 'b', 'c'], ['d', 'e', 'f'], ['g', 'h', 'i'], ['j', 'k', 'l'], ['m', 'n', 'o'], ['p', 'q', 'r', 's'], ['t', 'u', 'v'], ['w', 'x', 'y', 'z']];
+    let res = [];
+    for (let i = 0; i < digits.length; i++) {
+        const char = digits[i];
+        res.push(arr[char - 2]);
+    }
+    let t = res.reduce((a, b) => {
+        let m = [];
+        a.map((ar) => {
+            b.map((ar2) => {
+                m.push(ar + ar2);
+            });
+        });
+        return m;
+    });
+    return t;
 };
+letterCombinations('23');
 // @lc code=end
 
