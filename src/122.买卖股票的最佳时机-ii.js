@@ -51,14 +51,22 @@
  * @return {number}
  */
 var maxProfit = function (prices) {
-    let max = 0;
-
-    for (let i = 1; i < prices.length; i++) {
-        if (prices[i] > prices[i - 1]) {
-            max += prices[i] - prices[i - 1];
-        }
+    // let max = 0;
+    // for (let i = 1; i < prices.length; i++) {
+    //     if (prices[i] > prices[i - 1]) {
+    //         max += prices[i] - prices[i - 1];
+    //     }
+    // }
+    // return max;
+    let len = prices.length;
+    let l = r = 0;
+    r = -Infinity;
+    for (let i = 0; i < len; i++) {
+        l = Math.max(l, r + prices[i]);
+        r = Math.max(r, l - prices[i])
     }
-    return max;
+    return l;
 };
+maxProfit([7, 1, 5, 3, 6, 4]);
 // @lc code=end
 

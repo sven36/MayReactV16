@@ -50,20 +50,35 @@
  * @return {number}
  */
 var maxProfit = function (prices) {
-    let max = 0;
-    let arr = [];
-    for (let i = 1; i < prices.length; i++) {
-        if (prices[i] > prices[i - 1]) {
-            arr.push(prices[i] - prices[i - 1])
-        }
+    // let max = 0;
+    // let arr = [];
+    // for (let i = 1; i < prices.length; i++) {
+    //     if (prices[i] > prices[i - 1]) {
+    //         arr.push(prices[i] - prices[i - 1])
+    //     }
+    // }
+    // if (arr.length > 0) {
+    //     arr.reduce((a, b) => {
+    //         max = Math.max(max, a + b);
+    //         return b;
+    //     })
+    // }
+    // return max;
+    // dp[i][2][0] = max(dp[i-1][2][0], dp[i-1][2][1] + prices[i])
+    // dp[i][2][1] = max(dp[i-1][2][1], dp[i-1][1][0] - prices[i])
+    // dp[i][1][0] = max(dp[i-1][1][0], dp[i-1][1][1] + prices[i])
+    // dp[i][1][1] = max(dp[i-1][1][1], -prices[i])
+    let dp_20 = dp_10 = 0;
+    let dp_21 = dp_11 = -Infinity;
+
+    let len = prices.length;
+    for (let i = 0; i < len; i++) {
+        dp_20 = Math.max(dp_20, dp_21 + prices[i]);
+        dp_21 = Math.max(dp_21, dp_10 - prices[i]);
+        dp_10 = Math.max(dp_10, dp_11 + prices[i]);
+        dp_11 = Math.max(dp_11, - prices[i]);
     }
-    if (arr.length > 0) {
-        arr.reduce((a, b) => {
-            max = Math.max(max, a + b);
-            return b;
-        })
-    }
-    return max;
+    return dp_20;
 };
 // maxProfit([3, 3, 5, 0, 0, 3, 1, 4]);
 // @lc code=end

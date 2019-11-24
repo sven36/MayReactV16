@@ -42,27 +42,38 @@
  * @return {number}
  */
 var maxProfit = function (prices) {
-    let len = prices.length;
-    let min = max = 0;
+    // let len = prices.length;
+    // let min = max = 0;
 
+    // for (let i = 0; i < len; i++) {
+    //     let l = prices[i];
+    //     // for (let j = len - 1; j > 0; j--) {
+    //     //     const r = prices[j];
+    //     //     if (i < j) {
+    //     //         res = Math.max(res, r - l);
+    //     //     }
+    //     // }
+    //     if (i === 0) {
+    //         min = l;
+    //     }
+    //     if (l < min) {
+    //         min = l;
+    //     } else if (l - min > max) {
+    //         max = l - min;
+    //     }
+    // }
+    // return max;
+    let dp = [];
+    dp[-1] = [0, -Infinity];
+    let len = prices.length;
     for (let i = 0; i < len; i++) {
-        let l = prices[i];
-        // for (let j = len - 1; j > 0; j--) {
-        //     const r = prices[j];
-        //     if (i < j) {
-        //         res = Math.max(res, r - l);
-        //     }
-        // }
-        if (i === 0) {
-            min = l;
+        if (!dp[i]) {
+            dp[i] = [];
         }
-        if (l < min) {
-            min = l;
-        } else if (l - min > max) {
-            max = l - min;
-        }
+        dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][1] + prices[i]);
+        dp[i][1] = Math.max(dp[i - 1][1], - prices[i])
     }
-    return max;
+    return dp[len - 1][0];
 };
 // maxProfit([7, 1, 5, 3, 6, 4]);
 // @lc code=end
