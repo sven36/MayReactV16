@@ -48,13 +48,11 @@ var rob = function (nums) {
     if (len === 1) {
         return nums[0];
     }
-    if (len === 2) {
-        return Math.max(nums[0], nums[1]);
-    }
     let dp = [];
     dp[0] = nums[0];
-    dp[1] = nums[1];
-    for (let i = 2; i < len; i++) {
+    //i-2数组越界问题
+    dp[-1] = 0;
+    for (let i = 1; i < len; i++) {
         dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1]);
     }
     return dp[len - 1];
