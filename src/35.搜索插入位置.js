@@ -50,36 +50,36 @@
  * @return {number}
  */
 var searchInsert = function (nums, target) {
-    let res = 0;
-    if (nums.length === 1) {
-        if (nums[0] >= target) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-    function search(low, high) {
-        if (high - low === 1) {
-            return -1;
-        }
-        let mid = Math.floor((low + high) / 2);
-        if (nums[mid] === target) {
-            return mid;
-        } else if (nums[mid] > target) {
-            res = search(low, mid);
-            if (res === -1) {
-                return nums[low] >= target ? low : mid;
-            }
-        } else {
-            res = search(mid, high);
-            if (res === -1) {
-                return high;
-            }
-        }
-        return res;
-    }
-    res = search(0, nums.length);
-    return res;
+    // let res = 0;
+    // if (nums.length === 1) {
+    //     if (nums[0] >= target) {
+    //         return 0;
+    //     } else {
+    //         return 1;
+    //     }
+    // }
+    // function search(low, high) {
+    //     if (high - low === 1) {
+    //         return -1;
+    //     }
+    //     let mid = Math.floor((low + high) / 2);
+    //     if (nums[mid] === target) {
+    //         return mid;
+    //     } else if (nums[mid] > target) {
+    //         res = search(low, mid);
+    //         if (res === -1) {
+    //             return nums[low] >= target ? low : mid;
+    //         }
+    //     } else {
+    //         res = search(mid, high);
+    //         if (res === -1) {
+    //             return high;
+    //         }
+    //     }
+    //     return res;
+    // }
+    // res = search(0, nums.length);
+    // return res;
 };
 // searchInsert([1, 3], 1)
 // @lc code=end
