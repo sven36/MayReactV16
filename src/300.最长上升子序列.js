@@ -37,8 +37,30 @@
  * @param {number[]} nums
  * @return {number}
  */
-var lengthOfLIS = function(nums) {
-    
+var lengthOfLIS = function (nums) {
+
+    let res = 0;
+    let top = new Array(nums.length).fill(0);
+    let piles = 0;
+    for (let i = 0; i < nums.length; i++) {
+        let poker = nums[i];
+        let l = 0;
+        let r = piles;
+        while (l < r) {
+            let m = (l + r) >>> 1;
+            if (top[m] > poker) {
+                r = m;
+            } else if (top[m] < poker) {
+                l = m + 1;
+            } else {
+                r = m;
+            }
+        }
+        l === piles && (piles++);
+        top[l] = poker;
+    }
+    return piles;
+
 };
 // @lc code=end
 
