@@ -41,27 +41,15 @@
  * @return {boolean}
  */
 var canJump = function (nums) {
-    let res = false;
+    let res = true;
     let len = nums.length;
-    let s = 0;
+    let k = 0;
     for (let i = 0; i < len; i++) {
-        for (let j = i; j < len;) {
-            s += nums[j];
-            j = s;
-            if (s === len - 1) {
-                res = true;
-                break;
-            }
-            if (s > len - 1) {
-                break;
-            }
-        }
-        if (res) {
+        if (i > k) {
+            res = false;
             break;
         }
-        if (s > len - 1) {
-            s = 0;
-        }
+        k = Math.max(k, nums[i] + i);
     }
     return res;
 };
