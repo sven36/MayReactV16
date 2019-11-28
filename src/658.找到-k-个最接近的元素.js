@@ -63,25 +63,26 @@ var findClosestElements = function (arr, k, x) {
     let r = arr.length - 1;
     while (l < r) {
         let m = (l + r) >>> 1;
-        if (arr[m] > x) {
+        if (arr[m] >= x) {
             r = m;
         } else {
             l = m + 1;
         }
     }
-    let end = Math.ceil(k / 2);
+    let end = Math.ceil((k - 1) / 2);
 
     for (let i = end; i >= 0; i--) {
         let ll = arr[l - i];
         let rr = arr[l + i];
-        if (ll || i === 0) {
+        if (i !== 0) {
+            ll && res.push(ll);
+            rr && res2.unshift(rr);
+        } else {
             res.push(ll);
-        }
-        if (rr && i !== 0) {
-            res2.unshift(ll);
         }
     }
     return res.concat(res2);
 };
+findClosestElements([1, 2, 3, 4, 5], 4, 3)
 // @lc code=end
 
