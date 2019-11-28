@@ -40,10 +40,18 @@
  */
 var findMin = function (nums) {
     let l = 0;
-    let r = nums.length;
+    let r = nums.length - 1;
+
     while (l < r) {
-        
+        let m = (l + r) >>> 1;
+        if (nums[m] > nums[r]) {
+            l = m + 1;
+        } else {
+            r = m;
+        }
     }
+    return nums[l];
 };
+findMin([3, 1, 2])
 // @lc code=end
 
