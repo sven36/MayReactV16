@@ -38,8 +38,25 @@
  * @param {number} target
  * @return {number[]}
  */
-var twoSum = function(numbers, target) {
-    
+var twoSum = function (numbers, target) {
+    let res = [-1, -1];
+    let l = 0;
+    let r = numbers.length - 1;
+    while (l < r) {
+        let sum = numbers[r] + numbers[l];
+        if (sum === target) {
+            res[0] = l + 1;
+            res[1] = r + 1;
+            break;
+        } else if (sum > target) {
+            r--;
+        } else {
+            l++;
+        }
+    }
+
+    return res;
 };
+// twoSum([-1, 0], 9)
 // @lc code=end
 

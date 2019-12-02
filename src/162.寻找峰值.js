@@ -47,18 +47,18 @@
  * @return {number}
  */
 var findPeakElement = function (nums) {
-    let l = 0;
-    let r = nums.length - 1;
-    let res = -1;
-    while (l < r) {
-        let m = (l + r) >>> 1;
+    function search(low, high) {
+        if (high === low) {
+            return low;
+        }
+        let m = (low + high) >>> 1;
         if (nums[m] > nums[m + 1]) {
-            r = m;
+            return search(low, m);
         } else {
-            l = m + 1;
+            return search(m + 1, high);
         }
     }
-    return res;
+    return search(0, nums.length - 1);
 };
 // @lc code=end
 
