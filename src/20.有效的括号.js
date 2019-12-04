@@ -62,13 +62,47 @@
  */
 var isValid = function (s) {
     let len = s.length;
-    if (len & 1 === 0) {
-        let l = (l + len - 1) >>> 1;
-        let r = (l + len) >>> 1;
-        
-    } else {
-        return false;
+    let stack = [];
+    let isAdd = false;
+    for (let i = 0; i < len; i++) {
+        switch (s[i]) {
+            case '(':
+            case '[':
+            case '{':
+                // isAdd = true;
+                stack.unshift(s[i]);
+                break;
+            case ')':
+                if (stack[0] !== '(') {
+                    return false;
+                } else {
+                    stack.shift();
+                }
+                break;
+            case ']':
+                if (stack[0] !== '[') {
+                    return false;
+                } else {
+                    stack.shift();
+                }
+                break;
+            case '}':
+                if (stack[0] !== '{') {
+                    return false;
+                } else {
+                    stack.shift();
+                }
+                break;
+
+            default:
+                break;
+        }
     }
+    // if (isAdd === false) {
+    //     return isAdd;
+    // }
+    return stack.length === 0 ? true : false;
 };
+// isValid('()');
 // @lc code=end
 
