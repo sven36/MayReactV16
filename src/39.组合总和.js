@@ -53,26 +53,52 @@
  * @return {number[][]}
  */
 var combinationSum = function (candidates, target) {
+    // let res = [];
+    // let hash = {};
+    // candidates = candidates.sort();
+    // let len = candidates.length;
+    // for (let i = 1; i < len + 1; i++) {
+    //     hash[i] = [];
+    //     for (let j = 0; j < len; j++) {
+    //         if (i === candidates[j]) {
+    //             hash[i].push([i]);
+    //         } else if (i > j) {
+    //             let key = i - candidates[j];
+    //             hash[key] && hash[key].map(item => {
+    //                 let temp = [];
+    //                 temp.push(...item);
+    //                 temp.push(candidates[j]);
+    //                 temp = temp.sort();
+    //                 hash[i].push(temp);
+    //                 hash[i] = Array.from(new Set(hash[i]));
+
+    //             });
+    //         }
+
+    //     }
+    // }
+    // return res;
+
     let res = [];
-    let hash = {};
+    let path = [];
+    candidates.sort((a, b) => b - a);
     let len = candidates.length;
-    for (let i = 1; i < len + 1; i++) {
-        hash[i] = [];
+    let min = candidates[len - 1];
 
-        for (let j = 0; j < len; j++) {
-            if (i === candidates[j]) {
-                hash.append([i]);
-            } else if (i > j) {
-                hash[i - j].map(item => {
-                    let key = i - candidates[j];
-                });
-            }
-
+    function getRes(diff, start, path) {
+        if (diff === 0) {
+            res.push(path.slice());
+        }
+        if (diff < min) return;
+        for (let i = start; i < len; i++) {
+            path.push(candidates[i]);
+            getRes(diff - candidates[i], i, path);
+            path.pop();
         }
     }
-
-
+    getRes(target, 0, path);
     return res;
 };
+// combinationSum([2, 3, 5, 7], 7)
 // @lc code=end
 
