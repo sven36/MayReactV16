@@ -37,19 +37,42 @@
  * @return {ListNode}
  */
 var mergeTwoLists = function (l1, l2) {
-    if (l1 === null) {
-        return l2;
+    function ListNode(val) {
+        this.val = val;
+        this.next = null;
     }
-    if (l2 === null) {
-        return l1;
+    let fakeNode = new ListNode(-1);
+    let start = fakeNode;
+    while (l1 || l2) {
+        if (l1 && l2) {
+            if (l1.val >= l2.val) {
+                fakeNode.next = l2;
+                l2 = l2.next;
+                fakeNode = fakeNode.next;
+                continue;
+            } else {
+                fakeNode.next = l1;
+                l1 = l1.next;
+                fakeNode = fakeNode.next;
+                continue;
+            }
+        }
+        if (l1) {
+            fakeNode.next = l1;
+            l1 = l1.next;
+            fakeNode = fakeNode.next;
+            continue;
+        }
+        if (l2) {
+            fakeNode.next = l2;
+            l2 = l2.next;
+            fakeNode = fakeNode.next;
+            continue;
+        }
     }
-    if (l1.val < l2.val) {
-        l1.next = mergeTwoLists(l1.next, l2);
-        return l1;
-    } else {
-        l2.next = mergeTwoLists(l1, l2.next);
-        return l2;
-    }
+
+    return start.next;
 };
+// mergeTwoLists({ val: 1, next: { val: 2, next: null } }, { val: 1, next: { val: 3, next: null } })
 // @lc code=end
 
