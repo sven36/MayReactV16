@@ -33,27 +33,28 @@
  * @return {number}
  */
 var trap = function (height) {
-    let i = 0;
-    let len = height.length - 1;
-    let res = 0;
-    while (height[i] === 0) {
-        height.shift();
-        i++;
+    let stack = [];
+    let sum = 0;
+    let min = Infinity;
+    for (let i = 1; i < height.length; i++) {
+        stack.push(i);
+        if (height[i] >= min) {
+        } else if (stack.length > 1) {
+            let r = stack.length - 1;
+            let l = 0;
+            let val = Math.min(stack[0], stack[r]);
+            while (l <= r) {
+                if (val - stack[l] > 0) {
+                    sum += val - stack[l];
+                }
+                l++;
+            }
+            stack.length = 0;
+        }
+        min = Math.min(min, height[i], height[i - 1]);
     }
-    while (height[len] === 0) {
-        height.pop();
-        len--;
-    }
-
-    i = 0;
-    len = height.length - 1;
-
-    while (i <= len) {
-        let l = height[i];
-        let r = height[len];
-
-    }
-    return res;
+    return sum;
 };
+trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]);
 // @lc code=end
 

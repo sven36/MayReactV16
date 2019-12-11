@@ -45,19 +45,34 @@
  * @return {number}
  */
 var firstMissingPositive = function (nums) {
-    let l = 0;
+    let l = count = 0;
     let r = nums.length - 1;
+    if (r === -1) {
+        return 1;
+    }
+    if (r === 0) {
+        return nums[0] === 1 ? 2 : 1;
+    }
+    if (r === 1) {
+        if (nums[0] < 0 && nums[1] < 0) {
+            return 1;
+        }
+    }
     let res = Infinity;
     let max = 0;
+    let map = {};
     while (l <= r) {
         if (nums[l] > 0) {
             res = Math.min(res, nums[l]);
             max = Math.max(max, nums[l]);
+            map[nums[l]] = 1;
         }
         if (nums[r] > 0) {
             res = Math.min(res, nums[r]);
             max = Math.max(max, nums[r]);
+            map[nums[r]] = 1;
         }
+
         l++;
         r--;
     }
@@ -68,10 +83,14 @@ var firstMissingPositive = function (nums) {
             res++;
         }
     } else if (res >= 1) {
-        res++;
+        let val = 1;
+        while (map[val]) {
+            val++;
+        }
+        return val;
     }
     return res;
 };
-firstMissingPositive([1, 2, 0]);
+// firstMissingPositive([-1, -2]);
 // @lc code=end
 

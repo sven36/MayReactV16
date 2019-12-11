@@ -50,16 +50,7 @@
  * @return {number}
  */
 var uniquePaths = function (m, n) {
-    let nums = [];
-    for (let t = 0; t < n; t++) {
-        nums.push(1);
-    }
-    for (let i = 1; i < m; i++) {
-        for (let j = 1; j < n; j++) {
-            nums[j] += nums[j - 1];
-        }
-    }
-    return nums[n - 1];
+   
 };
 // uniquePaths(3, 2);
 // @lc code=end
