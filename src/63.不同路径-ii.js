@@ -49,75 +49,24 @@
  * @return {number}
  */
 var uniquePathsWithObstacles = function (obstacleGrid) {
-    // 行
-    // var n = obstacleGrid.length;
-    // // 列
-    // var m = obstacleGrid[0].length;
-    // // 初始化
-    // var dp = new Array(n);
-    // for (var i = 0; i < n; i++) {
-    //     dp[i] = new Array(m).fill(0);
-    // }
-    // dp[0][0] = obstacleGrid[0][0] == 0 ? 1 : 0;
-    // // 如果起点就是障碍物
-    // if (dp[0][0] == 0) {
-    //     return 0;
-    // }
-    // // 第一行
-    // for (var j = 1; j < m; j++) {
-    //     if (obstacleGrid[0][j] != 1) {
-    //         dp[0][j] = dp[0][j - 1];
-    //     }
-    // }
-    // // 第一列
-    // for (var r = 1; r < n; r++) {
-    //     if (obstacleGrid[r][0] != 1) {
-    //         dp[r][0] = dp[r - 1][0];
-    //     }
-    // }
-    // // 动态递推
-    // for (var i = 1; i < n; i++) {
-    //     for (var r = 1; r < m; r++) {
-    //         if (obstacleGrid[i][r] != 1) {
-    //             dp[i][r] = dp[i - 1][r] + dp[i][r - 1];
-    //         }
-    //     }
-    // }
-    // return dp[n - 1][m - 1];
-
-    if (obstacleGrid[0][0]) {
-        return 0;
-    }
-
-    let res = 0;
-    let row = obstacleGrid[0].length;
     let column = obstacleGrid.length;
-    let arr = [[1]];
-    for (let b = 1; b < column; b++) {
-        if (!obstacleGrid[b][0]) {
-            arr[b] = [arr[b - 1][0]];
-        } else {
-            arr[b] = [0];
-        }
-    }
-    for (let v = 1; v < row; v++) {
-        if (!obstacleGrid[0][v]) {
-            arr[0][v] = arr[0][v - 1];
-        } else {
-            arr[0][v] = 0;
-        }
-    }
+    let row = obstacleGrid[0].length;
+    let dp = [];
+    dp[0] = [0, 1];
+    dp[1] = [1];
     for (let i = 1; i < column; i++) {
+        dp[i] = [];
         for (let j = 1; j < row; j++) {
-            let item = obstacleGrid[i][j];
-            if (item === 0) {
-                arr[i][j] = arr[i][j - 1] + arr[i - 1][j];
+            if (obstacleGrid[i][j] === 0) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
             } else {
-                arr[i][j] = 0;
+
             }
+
         }
+
     }
-    return arr[column - 1][row - 1];
+    return dp[column - 1][row - 1];
 };
 // uniquePathsWithObstacles([[0, 0, 0], [0, 1, 0], [0, 0, 0]])
 // uniquePathsWithObstacles([[0, 1]])

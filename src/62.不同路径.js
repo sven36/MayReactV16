@@ -50,7 +50,13 @@
  * @return {number}
  */
 var uniquePaths = function (m, n) {
-    
+    //横向必须m-1步，纵向必须n-1步;总步数m+n-2步;
+    //n!/(m!*(n-m)!)
+
+    function fac(num) {
+        return num <= 1 ? 1 : num * fac(num - 1);
+    }
+    return fac(m + n - 2) / (fac(m - 1) * fac(n - 1));
 
 };
 // uniquePaths(3, 2);
