@@ -32,29 +32,51 @@
  * @param {number[]} height
  * @return {number}
  */
-var trap = function (height) {
+var trap = function (heights) {
+    // let l = 0;
+    // let r = heights.length - 1;
+    // let lMax = 0;
+    // let rMax = 0;
+    // let res = 0;
+    // while (l < r) {
+    //     if (heights[l] > heights[r]) {
+    //         if (heights[r] > rMax) {
+    //             rMax = heights[r];
+    //         } else {
+    //             res += rMax - heights[r];
+    //         }
+    //         r--;
+    //     } else {
+    //         if (heights[l] > lMax) {
+    //             lMax = heights[l];
+    //         } else {
+    //             res += lMax - heights[l];
+    //         }
+    //         l++;
+    //     }
+    // }
+    // return res;
+
     let stack = [];
-    let sum = 0;
-    let min = Infinity;
-    for (let i = 1; i < height.length; i++) {
-        stack.push(i);
-        if (height[i] >= min) {
-        } else if (stack.length > 1) {
-            let r = stack.length - 1;
-            let l = 0;
-            let val = Math.min(stack[0], stack[r]);
-            while (l <= r) {
-                if (val - stack[l] > 0) {
-                    sum += val - stack[l];
-                }
-                l++;
+    let res = 0;
+    let cur = 0;
+    while (cur < heights.length) {
+        while (stack.length !== 0 && heights[cur] > heights[stack[stack.length - 1]]) {
+            let p = stack.pop();
+            let l = stack.length;
+            if (l === 0) {
+                break;
             }
-            stack.length = 0;
+            let distance = cur - stack[l - 1] - 1;
+            let h = Math.min(heights[cur], heights[stack[l - 1]] - heights[p]);
+            res += distance * h;
         }
-        min = Math.min(min, height[i], height[i - 1]);
+        stack.push(cur++);
     }
-    return sum;
+    return res;
+
+
 };
-trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]);
+// trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]);
 // @lc code=end
 

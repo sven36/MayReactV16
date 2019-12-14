@@ -51,16 +51,31 @@
 var uniquePathsWithObstacles = function (obstacleGrid) {
     let column = obstacleGrid.length;
     let row = obstacleGrid[0].length;
+    if (!obstacleGrid || !obstacleGrid[0] || obstacleGrid[0][0] === 1) {
+        return 0;
+    }
     let dp = [];
-    dp[0] = [0, 1];
-    dp[1] = [1];
+    for (let m = 0; m < column; m++) {
+        dp[m] = new Array(row).fill(0);
+    }
+    dp[0][0] = 1;
+    for (let m = 1; m < column; m++) {
+        if (obstacleGrid[m][0] === 0) {
+            dp[m][0] = dp[m - 1][0];
+        }
+    }
+    for (let m = 1; m < row; m++) {
+        if (obstacleGrid[0][m] === 0) {
+            dp[0][m] = dp[0][m - 1];
+        }
+    }
+
     for (let i = 1; i < column; i++) {
-        dp[i] = [];
         for (let j = 1; j < row; j++) {
             if (obstacleGrid[i][j] === 0) {
                 dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
             } else {
-
+                dp[i][j] = 0;
             }
 
         }

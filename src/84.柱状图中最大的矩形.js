@@ -43,8 +43,16 @@
  * @param {number[]} heights
  * @return {number}
  */
-var largestRectangleArea = function(heights) {
-    
+var largestRectangleArea = function (heights) {
+    let l = 0;
+    let r = heights.length;
+    let stack = [];
+    while (l < r) {
+        
+        stack.push(l++);
+    }
+
+    return res;
 };
 // @lc code=end
 
