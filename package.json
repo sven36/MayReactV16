@@ -33,8 +33,8 @@
     "karma-jasmine": "2.0.1",
     "karma-webpack": "4.0.2",
     "nervjs": "1.3.13",
-    "react": "16.8.6",
-    "react-dom": "16.8.6",
+    "react": "16.12.0",
+    "react-dom": "16.12.0",
     "rollup": "1.15.3",
     "webpack": "4.34.0"
   },

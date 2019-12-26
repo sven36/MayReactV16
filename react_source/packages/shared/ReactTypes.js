@@ -7,18 +7,13 @@
  * @flow
  */
 
-// NOTE: this line is changed in the RN build, see: copyRNShims in packaging.js
-import type {EventResponder} from 'react-reconciler/src/ReactFiberHostConfig';
-
 export type ReactNode =
   | React$Element<any>
   | ReactPortal
   | ReactText
   | ReactFragment
   | ReactProvider<any>
-  | ReactConsumer<any>
-  | ReactEventComponent
-  | ReactEventTarget;
+  | ReactConsumer<any>;
 
 export type ReactEmpty = null | void | boolean;
 
@@ -84,30 +79,106 @@ export type RefObject = {|
   current: any,
 |};
 
-export type ReactEventComponentInstance = {|
-  currentFiber: mixed,
-  props: null | Object,
-  responder: EventResponder,
+export type ReactEventResponderInstance<E, C> = {|
+  fiber: Object,
+  props: Object,
+  responder: ReactEventResponder<E, C>,
   rootEventTypes: null | Set<string>,
-  rootInstance: mixed,
-  state: null | Object,
+  state: Object,
 |};
 
-export type ReactEventComponent = {|
+export type ReactEventResponderListener<E, C> = {|
+  props: Object,
+  responder: ReactEventResponder<E, C>,
+|};
+
+export type ReactEventResponder<E, C> = {
   $$typeof: Symbol | number,
   displayName: string,
-  props: null | Object,
-  responder: EventResponder,
-|};
+  targetEventTypes: null | Array<string>,
+  targetPortalPropagation: boolean,
+  rootEventTypes: null | Array<string>,
+  getInitialState: null | ((props: Object) => Object),
+  onEvent:
+    | null
+    | ((event: E, context: C, props: Object, state: Object) => void),
+  onRootEvent:
+    | null
+    | ((event: E, context: C, props: Object, state: Object) => void),
+  onMount: null | ((context: C, props: Object, state: Object) => void),
+  onUnmount: null | ((context: C, props: Object, state: Object) => void),
+};
 
-export type ReactEventTarget = {|
-  $$typeof: Symbol | number,
-  displayName?: string,
-  type: Symbol | number,
-|};
-
-export opaque type EventPriority = 0 | 1 | 2;
+export type EventPriority = 0 | 1 | 2;
 
 export const DiscreteEvent: EventPriority = 0;
 export const UserBlockingEvent: EventPriority = 1;
 export const ContinuousEvent: EventPriority = 2;
+
+export type ReactFundamentalComponentInstance<C, H> = {|
+  currentFiber: mixed,
+  instance: mixed,
+  prevProps: null | Object,
+  props: Object,
+  impl: ReactFundamentalImpl<C, H>,
+  state: Object,
+|};
+
+export type ReactFundamentalImpl<C, H> = {
+  displayName: string,
+  reconcileChildren: boolean,
+  getInitialState?: (props: Object) => Object,
+  getInstance: (context: C, props: Object, state: Object) => H,
+  getServerSideString?: (context: C, props: Object) => string,
+  getServerSideStringClose?: (context: C, props: Object) => string,
+  onMount: (context: C, instance: mixed, props: Object, state: Object) => void,
+  shouldUpdate?: (
+    context: C,
+    prevProps: null | Object,
+    nextProps: Object,
+    state: Object,
+  ) => boolean,
+  onUpdate?: (
+    context: C,
+    instance: mixed,
+    prevProps: null | Object,
+    nextProps: Object,
+    state: Object,
+  ) => void,
+  onUnmount?: (
+    context: C,
+    instance: mixed,
+    props: Object,
+    state: Object,
+  ) => void,
+  onHydrate?: (context: C, props: Object, state: Object) => boolean,
+  onFocus?: (context: C, props: Object, state: Object) => boolean,
+};
+
+export type ReactFundamentalComponent<C, H> = {|
+  $$typeof: Symbol | number,
+  impl: ReactFundamentalImpl<C, H>,
+|};
+
+export type ReactScope = {|
+  $$typeof: Symbol | number,
+|};
+
+export type ReactScopeMethods = {|
+  getChildren(): null | Array<ReactScopeMethods>,
+  getChildrenFromRoot(): null | Array<ReactScopeMethods>,
+  getParent(): null | ReactScopeMethods,
+  getProps(): Object,
+  queryAllNodes(
+    (type: string | Object, props: Object, instance: Object) => boolean,
+  ): null | Array<Object>,
+  queryFirstNode(
+    (type: string | Object, props: Object, instance: Object) => boolean,
+  ): null | Object,
+  containsNode(Object): boolean,
+|};
+
+export type ReactScopeInstance = {|
+  fiber: Object,
+  methods: null | ReactScopeMethods,
+|};

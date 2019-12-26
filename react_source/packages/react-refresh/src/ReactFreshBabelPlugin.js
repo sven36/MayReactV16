@@ -7,8 +7,23 @@
 
 'use strict';
 
-export default function(babel) {
+export default function(babel, opts = {}) {
+  if (typeof babel.getEnv === 'function') {
+    // Only available in Babel 7.
+    const env = babel.getEnv();
+    if (env !== 'development' && !opts.skipEnvCheck) {
+      throw new Error(
+        'React Refresh Babel transform should only be enabled in development environment. ' +
+          'Instead, the environment is: "' +
+          env +
+          '". If you want to override this check, pass {skipEnvCheck: true} as plugin options.',
+      );
+    }
+  }
+
   const {types: t} = babel;
+  const refreshReg = t.identifier(opts.refreshReg || '$RefreshReg$');
+  const refreshSig = t.identifier(opts.refreshSig || '$RefreshSig$');
 
   const registrationsByProgramPath = new Map();
   function createRegistration(programPath, persistentID) {
@@ -102,8 +117,40 @@ export default function(babel) {
         if (!isComponentishName(name)) {
           return false;
         }
-        if (init.type === 'Identifier' || init.type === 'MemberExpression') {
-          return false;
+        switch (init.type) {
+          case 'ArrowFunctionExpression':
+          case 'FunctionExpression':
+            // Likely component definitions.
+            break;
+          case 'CallExpression': {
+            // Maybe a HOC.
+            // Try to determine if this is some form of import.
+            const callee = init.callee;
+            const calleeType = callee.type;
+            if (calleeType === 'Import') {
+              return false;
+            } else if (calleeType === 'Identifier') {
+              if (callee.name.indexOf('require') === 0) {
+                return false;
+              } else if (callee.name.indexOf('import') === 0) {
+                return false;
+              }
+              // Neither require nor import. Might be a HOC.
+              // Pass through.
+            } else if (calleeType === 'MemberExpression') {
+              // Could be something like React.forwardRef(...)
+              // Pass through.
+            } else {
+              // More complicated call.
+              return false;
+            }
+            break;
+          }
+          case 'TaggedTemplateExpression':
+            // Maybe something like styled.div`...`
+            break;
+          default:
+            return false;
         }
         const initPath = path.get('init');
         const foundInside = findInnerComponents(
@@ -200,13 +247,13 @@ export default function(babel) {
       key: fnHookCalls.map(call => call.name + '{' + call.key + '}').join('\n'),
       customHooks: fnHookCalls
         .filter(call => !isBuiltinHook(call.name))
-        .map(call => call.callee),
+        .map(call => t.cloneDeep(call.callee)),
     };
   }
 
   let hasForceResetCommentByFile = new WeakMap();
 
-  // We let user do /* @hot reset */ to reset state in the whole file.
+  // We let user do /* @refresh reset */ to reset state in the whole file.
   function hasForceResetComment(path) {
     const file = path.hub.file;
     let hasForceReset = hasForceResetCommentByFile.get(file);
@@ -218,7 +265,7 @@ export default function(babel) {
     const comments = file.ast.comments;
     for (let i = 0; i < comments.length; i++) {
       const cmt = comments[i];
-      if (cmt.value.indexOf('@hot reset') !== -1) {
+      if (cmt.value.indexOf('@refresh reset') !== -1) {
         hasForceReset = true;
         break;
       }
@@ -234,7 +281,7 @@ export default function(babel) {
     let forceReset = hasForceResetComment(scope.path);
     let customHooksInScope = [];
     customHooks.forEach(callee => {
-      // Check if a correponding binding exists where we emit the signature.
+      // Check if a corresponding binding exists where we emit the signature.
       let bindingName;
       switch (callee.type) {
         case 'MemberExpression':
@@ -255,13 +302,34 @@ export default function(babel) {
       }
     });
 
-    const args = [node, t.stringLiteral(key)];
+    let finalKey = key;
+    if (typeof require === 'function' && !opts.emitFullSignatures) {
+      // Prefer to hash when we can (e.g. outside of ASTExplorer).
+      // This makes it deterministically compact, even if there's
+      // e.g. a useState ininitalizer with some code inside.
+      // We also need it for www that has transforms like cx()
+      // that don't understand if something is part of a string.
+      finalKey = require('crypto')
+        .createHash('sha1')
+        .update(key)
+        .digest('base64');
+    }
+
+    const args = [node, t.stringLiteral(finalKey)];
     if (forceReset || customHooksInScope.length > 0) {
       args.push(t.booleanLiteral(forceReset));
     }
     if (customHooksInScope.length > 0) {
       args.push(
-        t.arrowFunctionExpression([], t.arrayExpression(customHooksInScope)),
+        // TODO: We could use an arrow here to be more compact.
+        // However, don't do it until AMA can run them natively.
+        t.functionExpression(
+          null,
+          [],
+          t.blockStatement([
+            t.returnStatement(t.arrayExpression(customHooksInScope)),
+          ]),
+        ),
       );
     }
     return args;
@@ -451,7 +519,7 @@ export default function(babel) {
           const sigCallID = path.scope.generateUidIdentifier('_s');
           path.scope.parent.push({
             id: sigCallID,
-            init: t.callExpression(t.identifier('__signature__'), []),
+            init: t.callExpression(refreshSig, []),
           });
 
           // The signature call is split in two parts. One part is called inside the function.
@@ -466,7 +534,7 @@ export default function(babel) {
           // The second call is around the function itself.
           // This is used to associate a type with a signature.
 
-          // Unlike with __register__, this needs to work for nested
+          // Unlike with $RefreshReg$, this needs to work for nested
           // declarations too. So we need to search for a path where
           // we can insert a statement rather than hardcoding it.
           let insertAfterPath = null;
@@ -513,11 +581,16 @@ export default function(babel) {
           const sigCallID = path.scope.generateUidIdentifier('_s');
           path.scope.parent.push({
             id: sigCallID,
-            init: t.callExpression(t.identifier('__signature__'), []),
+            init: t.callExpression(refreshSig, []),
           });
 
           // The signature call is split in two parts. One part is called inside the function.
           // This is used to signal when first render happens.
+          if (path.node.body.type !== 'BlockStatement') {
+            path.node.body = t.blockStatement([
+              t.returnStatement(path.node.body),
+            ]);
+          }
           path
             .get('body')
             .unshiftContainer(
@@ -672,7 +745,7 @@ export default function(babel) {
             path.pushContainer(
               'body',
               t.expressionStatement(
-                t.callExpression(t.identifier('__register__'), [
+                t.callExpression(refreshReg, [
                   handle,
                   t.stringLiteral(persistentID),
                 ]),

@@ -25,6 +25,15 @@ const {asyncCopyTo, asyncRimRaf} = require('./utils');
 const codeFrame = require('babel-code-frame');
 const Wrappers = require('./wrappers');
 
+const RELEASE_CHANNEL = process.env.RELEASE_CHANNEL;
+
+// Default to building in experimental mode. If the release channel is set via
+// an environment variable, then check if it's "experimental".
+const __EXPERIMENTAL__ =
+  typeof RELEASE_CHANNEL === 'string'
+    ? RELEASE_CHANNEL === 'experimental'
+    : true;
+
 // Errors in promises should be fatal.
 let loggedErrors = new Set();
 process.on('unhandledRejection', err => {
@@ -338,6 +347,8 @@ function getPlugins(
     useForks(forks),
     // Ensure we don't try to bundle any fbjs modules.
     forbidFBJSImports(),
+    // Replace any externals with their valid internal FB mappings
+    isFBBundle && replace(Bundles.fbBundleExternalsMap),
     // Use Node resolution mechanism.
     resolve({
       skip: externals,
@@ -351,7 +362,7 @@ function getPlugins(
     // Remove 'use strict' from individual source files.
     {
       transform(source) {
-        return source.replace(/['"]use strict['"']/g, '');
+        return source.replace(/['"]use strict["']/g, '');
       },
     },
     // Turn __DEV__ and process.env checks into constants.
@@ -360,6 +371,7 @@ function getPlugins(
       __PROFILE__: isProfiling || !isProduction ? 'true' : 'false',
       __UMD__: isUMDBundle ? 'true' : 'false',
       'process.env.NODE_ENV': isProduction ? "'production'" : "'development'",
+      __EXPERIMENTAL__,
     }),
     // We still need CommonJS for external deps like object-assign.
     commonjs(),
@@ -370,10 +382,6 @@ function getPlugins(
           // Don't let it create global variables in the browser.
           // https://github.com/facebook/react/issues/10909
           assume_function_wrapper: !isUMDBundle,
-          // Works because `google-closure-compiler-js` is forked in Yarn lockfile.
-          // We can remove this if GCC merges my PR:
-          // https://github.com/google/closure-compiler/pull/2707
-          // and then the compiled version is released via `google-closure-compiler-js`.
           renaming: !shouldStayReadable,
         })
       ),
@@ -456,11 +464,11 @@ async function createBundle(bundle, bundleType) {
   const packageName = Packaging.getPackageName(bundle.entry);
 
   let resolvedEntry = require.resolve(bundle.entry);
-  if (
+  const isFBBundle =
     bundleType === FB_WWW_DEV ||
     bundleType === FB_WWW_PROD ||
-    bundleType === FB_WWW_PROFILING
-  ) {
+    bundleType === FB_WWW_PROFILING;
+  if (isFBBundle) {
     const resolvedFBEntry = resolvedEntry.replace('.js', '.fb.js');
     if (fs.existsSync(resolvedFBEntry)) {
       resolvedEntry = resolvedFBEntry;
@@ -476,6 +484,10 @@ async function createBundle(bundle, bundleType) {
   if (!shouldBundleDependencies) {
     const deps = Modules.getDependencies(bundleType, bundle.entry);
     externals = externals.concat(deps);
+  }
+  if (isFBBundle) {
+    // Add any mapped fb bundle externals
+    externals = externals.concat(Object.values(Bundles.fbBundleExternalsMap));
   }
 
   const importSideEffects = Modules.getImportSideEffects();
@@ -634,7 +646,9 @@ function handleRollupError(error) {
 }
 
 async function buildEverything() {
-  await asyncRimRaf('build');
+  if (!argv['unsafe-partial']) {
+    await asyncRimRaf('build');
+  }
 
   // Run them serially for better console output
   // and to avoid any potential race conditions.
@@ -649,9 +663,6 @@ async function buildEverything() {
       [bundle, NODE_DEV],
       [bundle, NODE_PROD],
       [bundle, NODE_PROFILING],
-      [bundle, FB_WWW_DEV],
-      [bundle, FB_WWW_PROD],
-      [bundle, FB_WWW_PROFILING],
       [bundle, RN_OSS_DEV],
       [bundle, RN_OSS_PROD],
       [bundle, RN_OSS_PROFILING],
@@ -659,6 +670,15 @@ async function buildEverything() {
       [bundle, RN_FB_PROD],
       [bundle, RN_FB_PROFILING]
     );
+
+    if (__EXPERIMENTAL__) {
+      // www uses experimental builds only.
+      bundles.push(
+        [bundle, FB_WWW_DEV],
+        [bundle, FB_WWW_PROD],
+        [bundle, FB_WWW_PROFILING]
+      );
+    }
   }
 
   if (!shouldExtractErrors && process.env.CIRCLE_NODE_TOTAL) {

@@ -39,6 +39,9 @@ import {
   useReducer,
   useRef,
   useState,
+  useResponder,
+  useTransition,
+  useDeferredValue,
 } from './ReactHooks';
 import {withSuspenseConfig} from './ReactBatchConfig';
 import {
@@ -50,8 +53,16 @@ import {
   jsxWithValidationDynamic,
 } from './ReactElementValidator';
 import ReactSharedInternals from './ReactSharedInternals';
-import {error, warn} from './withComponentStack';
-import {enableJSXTransformAPI} from 'shared/ReactFeatureFlags';
+import createFundamental from 'shared/createFundamentalComponent';
+import createResponder from 'shared/createEventResponder';
+import createScope from 'shared/createScope';
+import {
+  enableJSXTransformAPI,
+  enableFlareAPI,
+  enableFundamentalAPI,
+  enableScopeAPI,
+  exposeConcurrentModeAPIs,
+} from 'shared/ReactFeatureFlags';
 const React = {
   Children: {
     map,
@@ -70,9 +81,6 @@ const React = {
   lazy,
   memo,
 
-  error,
-  warn,
-
   useCallback,
   useContext,
   useEffect,
@@ -88,7 +96,6 @@ const React = {
   Profiler: REACT_PROFILER_TYPE,
   StrictMode: REACT_STRICT_MODE_TYPE,
   Suspense: REACT_SUSPENSE_TYPE,
-  unstable_SuspenseList: REACT_SUSPENSE_LIST_TYPE,
 
   createElement: __DEV__ ? createElementWithValidation : createElement,
   cloneElement: __DEV__ ? cloneElementWithValidation : cloneElement,
@@ -97,10 +104,28 @@ const React = {
 
   version: ReactVersion,
 
-  unstable_withSuspenseConfig: withSuspenseConfig,
-
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReactSharedInternals,
 };
+
+if (exposeConcurrentModeAPIs) {
+  React.useTransition = useTransition;
+  React.useDeferredValue = useDeferredValue;
+  React.SuspenseList = REACT_SUSPENSE_LIST_TYPE;
+  React.unstable_withSuspenseConfig = withSuspenseConfig;
+}
+
+if (enableFlareAPI) {
+  React.unstable_useResponder = useResponder;
+  React.unstable_createResponder = createResponder;
+}
+
+if (enableFundamentalAPI) {
+  React.unstable_createFundamental = createFundamental;
+}
+
+if (enableScopeAPI) {
+  React.unstable_createScope = createScope;
+}
 
 // Note: some APIs are added with feature flags.
 // Make sure that stable builds for open source

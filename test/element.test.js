@@ -1,7 +1,7 @@
 
 
-import React from '../react/build/node_modules/react/cjs/react.development';
-import ReactDOM from '../react/build/node_modules/react-dom/index';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 describe('may.js', () => {
 

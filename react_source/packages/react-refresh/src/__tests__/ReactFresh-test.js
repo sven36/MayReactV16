@@ -65,11 +65,11 @@ describe('ReactFresh', () => {
     return Component;
   }
 
-  function __register__(type, id) {
+  function $RefreshReg$(type, id) {
     ReactFreshRuntime.register(type, id);
   }
 
-  function __signature__(type, key, forceReset, getCustomHooks) {
+  function $RefreshSig$(type, key, forceReset, getCustomHooks) {
     ReactFreshRuntime.setSignature(type, key, forceReset, getCustomHooks);
     return type;
   }
@@ -85,7 +85,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -108,7 +108,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -175,10 +175,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.forwardRef(() => <Hello />);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -201,10 +201,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.forwardRef(() => <Hello />);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -241,7 +241,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         // Note: no forwardRef wrapper this time.
         return Hello;
@@ -266,7 +266,7 @@ describe('ReactFresh', () => {
               </p>
             );
           }
-          __register__(Hello, 'Hello');
+          $RefreshReg$(Hello, 'Hello');
 
           function renderInner() {
             return <Hello />;
@@ -274,14 +274,14 @@ describe('ReactFresh', () => {
           // Both of these are wrappers around the same inner function.
           // They should be treated as distinct types across reloads.
           let ForwardRefA = React.forwardRef(renderInner);
-          __register__(ForwardRefA, 'ForwardRefA');
+          $RefreshReg$(ForwardRefA, 'ForwardRefA');
           let ForwardRefB = React.forwardRef(renderInner);
-          __register__(ForwardRefB, 'ForwardRefB');
+          $RefreshReg$(ForwardRefB, 'ForwardRefB');
 
           function Parent({cond}) {
             return cond ? <ForwardRefA /> : <ForwardRefB />;
           }
-          __register__(Parent, 'Parent');
+          $RefreshReg$(Parent, 'Parent');
 
           return Parent;
         },
@@ -332,7 +332,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         function renderInner() {
           return <Hello />;
@@ -340,14 +340,14 @@ describe('ReactFresh', () => {
         // Both of these are wrappers around the same inner function.
         // They should be treated as distinct types across reloads.
         let ForwardRefA = React.forwardRef(renderInner);
-        __register__(ForwardRefA, 'ForwardRefA');
+        $RefreshReg$(ForwardRefA, 'ForwardRefA');
         let ForwardRefB = React.forwardRef(renderInner);
-        __register__(ForwardRefB, 'ForwardRefB');
+        $RefreshReg$(ForwardRefB, 'ForwardRefB');
 
         function Parent({cond}) {
           return cond ? <ForwardRefA /> : <ForwardRefB />;
         }
-        __register__(Parent, 'Parent');
+        $RefreshReg$(Parent, 'Parent');
 
         return Parent;
       });
@@ -393,10 +393,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.forwardRef(() => <Hello color="blue" />);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -419,10 +419,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.forwardRef(() => <Hello color="red" />);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -444,12 +444,12 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         function renderHello() {
           return <Hello color="blue" />;
         }
-        __register__(renderHello, 'renderHello');
+        $RefreshReg$(renderHello, 'renderHello');
 
         return React.forwardRef(renderHello);
       });
@@ -473,12 +473,12 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         function renderHello() {
           return <Hello color="red" />;
         }
-        __register__(renderHello, 'renderHello');
+        $RefreshReg$(renderHello, 'renderHello');
 
         // Not updating the wrapper.
       });
@@ -501,10 +501,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.memo(Hello);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -527,10 +527,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.memo(Hello);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -567,7 +567,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         // Note: no wrapper this time.
         return Hello;
@@ -593,7 +593,7 @@ describe('ReactFresh', () => {
         }
 
         const Outer = React.memo(Hello, () => true);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -618,7 +618,7 @@ describe('ReactFresh', () => {
         }
 
         const Outer = React.memo(Hello, () => true);
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -655,7 +655,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         // Note: no wrapper this time.
         return Hello;
@@ -679,7 +679,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         return React.memo(Hello);
       });
@@ -703,7 +703,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         // Not updating the wrapper.
       });
@@ -726,10 +726,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.memo(React.forwardRef(() => <Hello />));
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -752,10 +752,10 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.memo(React.forwardRef(() => <Hello />));
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
         return Outer;
       });
 
@@ -792,7 +792,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         // Note: no wrapper this time.
         return Hello;
@@ -816,7 +816,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.lazy(
           () =>
@@ -824,7 +824,7 @@ describe('ReactFresh', () => {
               setTimeout(() => resolve({default: Hello}), 100);
             }),
         );
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
 
         function App() {
           return (
@@ -833,7 +833,7 @@ describe('ReactFresh', () => {
             </React.Suspense>
           );
         }
-        __register__(App, 'App');
+        $RefreshReg$(App, 'App');
 
         return App;
       });
@@ -863,7 +863,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.lazy(
           () =>
@@ -871,7 +871,7 @@ describe('ReactFresh', () => {
               setTimeout(() => resolve({default: Hello}), 100);
             }),
         );
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
 
         function App() {
           return (
@@ -880,7 +880,7 @@ describe('ReactFresh', () => {
             </React.Suspense>
           );
         }
-        __register__(App, 'App');
+        $RefreshReg$(App, 'App');
 
         return App;
       });
@@ -918,7 +918,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         // Note: no lazy wrapper this time.
 
@@ -929,7 +929,7 @@ describe('ReactFresh', () => {
             </React.Suspense>
           );
         }
-        __register__(App, 'App');
+        $RefreshReg$(App, 'App');
 
         return App;
       });
@@ -952,7 +952,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.lazy(
           () =>
@@ -960,7 +960,7 @@ describe('ReactFresh', () => {
               setTimeout(() => resolve({default: Hello}), 100);
             }),
         );
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
 
         function App() {
           return (
@@ -985,7 +985,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       await act(async () => {
@@ -1015,7 +1015,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.firstChild).toBe(el);
       expect(el.textContent).toBe('1');
@@ -1035,7 +1035,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.forwardRef(renderHello);
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.lazy(
           () =>
@@ -1043,7 +1043,7 @@ describe('ReactFresh', () => {
               setTimeout(() => resolve({default: Hello}), 100);
             }),
         );
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
 
         function App() {
           return (
@@ -1069,7 +1069,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.forwardRef(renderHello);
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       await act(async () => {
@@ -1100,7 +1100,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.forwardRef(renderHello);
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.firstChild).toBe(el);
       expect(el.textContent).toBe('1');
@@ -1120,7 +1120,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.memo(renderHello);
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.lazy(
           () =>
@@ -1128,7 +1128,7 @@ describe('ReactFresh', () => {
               setTimeout(() => resolve({default: Hello}), 100);
             }),
         );
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
 
         function App() {
           return (
@@ -1154,7 +1154,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.memo(renderHello);
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       await act(async () => {
@@ -1185,7 +1185,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.memo(renderHello);
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.firstChild).toBe(el);
       expect(el.textContent).toBe('1');
@@ -1205,7 +1205,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.memo(React.forwardRef(renderHello));
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         const Outer = React.lazy(
           () =>
@@ -1213,7 +1213,7 @@ describe('ReactFresh', () => {
               setTimeout(() => resolve({default: Hello}), 100);
             }),
         );
-        __register__(Outer, 'Outer');
+        $RefreshReg$(Outer, 'Outer');
 
         function App() {
           return (
@@ -1239,7 +1239,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.memo(React.forwardRef(renderHello));
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       await act(async () => {
@@ -1270,7 +1270,7 @@ describe('ReactFresh', () => {
           );
         }
         const Hello = React.memo(React.forwardRef(renderHello));
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.firstChild).toBe(el);
       expect(el.textContent).toBe('1');
@@ -1290,7 +1290,7 @@ describe('ReactFresh', () => {
               </p>
             );
           }
-          __register__(Hello, 'Hello');
+          $RefreshReg$(Hello, 'Hello');
 
           function Never() {
             throw new Promise(resolve => {});
@@ -1337,7 +1337,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.childNodes.length).toBe(1);
       expect(container.childNodes[0]).toBe(primaryChild);
@@ -1383,7 +1383,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       // Colors inside both trees should change:
@@ -1415,7 +1415,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.childNodes.length).toBe(1);
       expect(container.childNodes[0]).toBe(primaryChild);
@@ -1438,12 +1438,12 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         function App() {
           appRenders++;
           return <Hello />;
         }
-        __register__(App, 'App');
+        $RefreshReg$(App, 'App');
         return App;
       });
 
@@ -1471,7 +1471,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       // Assert the state was preserved but color changed.
@@ -1502,7 +1502,7 @@ describe('ReactFresh', () => {
           helloRenders++;
           return <div>X{children}X</div>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         function App() {
           return (
@@ -1527,7 +1527,7 @@ describe('ReactFresh', () => {
           helloRenders++;
           return <div>O{children}O</div>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(helloRenders).toBe(5);
       expect(container.textContent).toBe('OOOOOOOOOO');
@@ -1546,7 +1546,7 @@ describe('ReactFresh', () => {
               </p>
             );
           }
-          __register__(Hello1, 'Hello1');
+          $RefreshReg$(Hello1, 'Hello1');
           function Hello2() {
             const [val, setVal] = React.useState(0);
             return (
@@ -1555,11 +1555,11 @@ describe('ReactFresh', () => {
               </p>
             );
           }
-          __register__(Hello2, 'Hello2');
+          $RefreshReg$(Hello2, 'Hello2');
           function App({cond}) {
             return cond ? <Hello1 /> : <Hello2 />;
           }
-          __register__(App, 'App');
+          $RefreshReg$(App, 'App');
           return App;
         },
         {cond: false},
@@ -1598,7 +1598,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello1, 'Hello1');
+        $RefreshReg$(Hello1, 'Hello1');
         function Hello2() {
           const [val, setVal] = React.useState(0);
           return (
@@ -1607,7 +1607,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello2, 'Hello2');
+        $RefreshReg$(Hello2, 'Hello2');
       });
 
       // Assert the state was preserved but color changed.
@@ -1635,9 +1635,9 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         // When this changes, we'll expect a remount:
-        __signature__(Hello, '1');
+        $RefreshSig$(Hello, '1');
         return Hello;
       });
 
@@ -1660,9 +1660,9 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         // The signature hasn't changed since the last time:
-        __signature__(Hello, '1');
+        $RefreshSig$(Hello, '1');
         return Hello;
       });
 
@@ -1682,8 +1682,8 @@ describe('ReactFresh', () => {
           );
         }
         // We're changing the signature now so it will remount:
-        __register__(Hello, 'Hello');
-        __signature__(Hello, '2');
+        $RefreshReg$(Hello, 'Hello');
+        $RefreshSig$(Hello, '2');
         return Hello;
       });
 
@@ -1723,8 +1723,8 @@ describe('ReactFresh', () => {
           );
         }
         // Same signature as last time.
-        __register__(Hello, 'Hello');
-        __signature__(Hello, '2');
+        $RefreshReg$(Hello, 'Hello');
+        $RefreshSig$(Hello, '2');
         return Hello;
       });
 
@@ -1743,7 +1743,7 @@ describe('ReactFresh', () => {
           );
         }
         // No signature this time.
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -1761,8 +1761,8 @@ describe('ReactFresh', () => {
         function Hello() {
           return null;
         }
-        __register__(Hello, 'Hello');
-        __signature__(Hello, '1');
+        $RefreshReg$(Hello, 'Hello');
+        $RefreshSig$(Hello, '1');
         return Hello;
       });
 
@@ -1818,9 +1818,9 @@ describe('ReactFresh', () => {
             <span />
           </HelloV1>,
           <HelloV1>
-            <React.Fragment>
+            <>
               <HelloV1 />
-            </React.Fragment>
+            </>
           </HelloV1>,
         </div>,
         <HelloV1>
@@ -1907,8 +1907,8 @@ describe('ReactFresh', () => {
       function Hello({children}) {
         return <section data-color="blue">{children}</section>;
       }
-      __register__(Hello, 'Hello');
-      __signature__(Hello, '1');
+      $RefreshReg$(Hello, 'Hello');
+      $RefreshSig$(Hello, '1');
       return Hello;
     });
 
@@ -1925,8 +1925,8 @@ describe('ReactFresh', () => {
       function Hello({children}) {
         return <section data-color="red">{children}</section>;
       }
-      __register__(Hello, 'Hello');
-      __signature__(Hello, '1');
+      $RefreshReg$(Hello, 'Hello');
+      $RefreshSig$(Hello, '1');
       return Hello;
     });
 
@@ -1944,8 +1944,8 @@ describe('ReactFresh', () => {
       function Hello({children}) {
         return <section data-color="orange">{children}</section>;
       }
-      __register__(Hello, 'Hello');
-      __signature__(Hello, '2'); // Remount
+      $RefreshReg$(Hello, 'Hello');
+      $RefreshSig$(Hello, '2'); // Remount
       return Hello;
     });
 
@@ -1963,8 +1963,8 @@ describe('ReactFresh', () => {
       function Hello({children}) {
         return <section data-color="black">{children}</section>;
       }
-      __register__(Hello, 'Hello');
-      __signature__(Hello, '2'); // Same signature as before
+      $RefreshReg$(Hello, 'Hello');
+      $RefreshSig$(Hello, '2'); // Same signature as before
       return Hello;
     });
 
@@ -2111,9 +2111,9 @@ describe('ReactFresh', () => {
     if (__DEV__) {
       testRemountingWithWrapper(Hello => {
         const child = (
-          <React.Fragment>
+          <>
             <Hello />
-          </React.Fragment>
+          </>
         );
         return function Wrapper() {
           return child;
@@ -2126,13 +2126,13 @@ describe('ReactFresh', () => {
     if (__DEV__) {
       testRemountingWithWrapper(Hello => {
         const child = (
-          <React.Fragment>
-            <React.Fragment>
+          <>
+            <>
               <React.Fragment />
-            </React.Fragment>
+            </>
             <Hello />
             <React.Fragment />
-          </React.Fragment>
+          </>
         );
         return function Wrapper() {
           return child;
@@ -2166,9 +2166,9 @@ describe('ReactFresh', () => {
           </p>
         );
       }
-      __register__(Hello, 'Hello');
+      $RefreshReg$(Hello, 'Hello');
       // When this changes, we'll expect a remount:
-      __signature__(Hello, '1');
+      $RefreshSig$(Hello, '1');
 
       // Use the passed wrapper.
       // This will be different in every test.
@@ -2194,9 +2194,9 @@ describe('ReactFresh', () => {
           </p>
         );
       }
-      __register__(Hello, 'Hello');
+      $RefreshReg$(Hello, 'Hello');
       // The signature hasn't changed since the last time:
-      __signature__(Hello, '1');
+      $RefreshSig$(Hello, '1');
       return Hello;
     });
 
@@ -2216,8 +2216,8 @@ describe('ReactFresh', () => {
         );
       }
       // We're changing the signature now so it will remount:
-      __register__(Hello, 'Hello');
-      __signature__(Hello, '2');
+      $RefreshReg$(Hello, 'Hello');
+      $RefreshSig$(Hello, '2');
       return Hello;
     });
 
@@ -2245,8 +2245,8 @@ describe('ReactFresh', () => {
         );
       }
       // Same signature as last time.
-      __register__(Hello, 'Hello');
-      __signature__(Hello, '2');
+      $RefreshReg$(Hello, 'Hello');
+      $RefreshSig$(Hello, '2');
       return Hello;
     });
 
@@ -2265,7 +2265,7 @@ describe('ReactFresh', () => {
         );
       }
       // No signature this time.
-      __register__(Hello, 'Hello');
+      $RefreshReg$(Hello, 'Hello');
       return Hello;
     });
 
@@ -2296,7 +2296,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -2329,7 +2329,7 @@ describe('ReactFresh', () => {
               </p>
             );
           }
-          __register__(Hello, 'Hello');
+          $RefreshReg$(Hello, 'Hello');
           return Hello;
         });
       });
@@ -2350,12 +2350,55 @@ describe('ReactFresh', () => {
     }
   });
 
-  it('can hot reload offscreen components', () => {
+  // This pattern is inspired by useSubscription and similar mechanisms.
+  it('does not get into infinite loops during render phase updates', () => {
     if (__DEV__) {
+      render(() => {
+        function Hello() {
+          const source = React.useMemo(() => ({value: 10}), []);
+          const [state, setState] = React.useState({value: null});
+          if (state !== source) {
+            setState(source);
+          }
+          return <p style={{color: 'blue'}}>{state.value}</p>;
+        }
+        $RefreshReg$(Hello, 'Hello');
+        return Hello;
+      });
+
+      const el = container.firstChild;
+      expect(el.textContent).toBe('10');
+      expect(el.style.color).toBe('blue');
+
+      // Perform a hot update.
+      act(() => {
+        patch(() => {
+          function Hello() {
+            const source = React.useMemo(() => ({value: 20}), []);
+            const [state, setState] = React.useState({value: null});
+            if (state !== source) {
+              // This should perform a single render-phase update.
+              setState(source);
+            }
+            return <p style={{color: 'red'}}>{state.value}</p>;
+          }
+          $RefreshReg$(Hello, 'Hello');
+          return Hello;
+        });
+      });
+
+      expect(container.firstChild).toBe(el);
+      expect(el.textContent).toBe('20');
+      expect(el.style.color).toBe('red');
+    }
+  });
+
+  it('can hot reload offscreen components', () => {
+    if (__DEV__ && __EXPERIMENTAL__) {
       const AppV1 = prepare(() => {
         function Hello() {
           React.useLayoutEffect(() => {
-            Scheduler.yieldValue('Hello#layout');
+            Scheduler.unstable_yieldValue('Hello#layout');
           });
           const [val, setVal] = React.useState(0);
           return (
@@ -2364,11 +2407,11 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         return function App({offscreen}) {
           React.useLayoutEffect(() => {
-            Scheduler.yieldValue('App#layout');
+            Scheduler.unstable_yieldValue('App#layout');
           });
           return (
             <div hidden={offscreen}>
@@ -2378,7 +2421,7 @@ describe('ReactFresh', () => {
         };
       });
 
-      const root = ReactDOM.unstable_createRoot(container);
+      const root = ReactDOM.createRoot(container);
       root.render(<AppV1 offscreen={true} />);
       expect(Scheduler).toFlushAndYieldThrough(['App#layout']);
       const el = container.firstChild;
@@ -2389,7 +2432,7 @@ describe('ReactFresh', () => {
       patch(() => {
         function Hello() {
           React.useLayoutEffect(() => {
-            Scheduler.yieldValue('Hello#layout');
+            Scheduler.unstable_yieldValue('Hello#layout');
           });
           const [val, setVal] = React.useState(0);
           return (
@@ -2398,7 +2441,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       // It's still offscreen so we don't see anything.
@@ -2423,7 +2466,7 @@ describe('ReactFresh', () => {
       patch(() => {
         function Hello() {
           React.useLayoutEffect(() => {
-            Scheduler.yieldValue('Hello#layout');
+            Scheduler.unstable_yieldValue('Hello#layout');
           });
           const [val, setVal] = React.useState(0);
           return (
@@ -2432,7 +2475,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       // It's still offscreen so we don't see the updates.
@@ -2454,7 +2497,7 @@ describe('ReactFresh', () => {
         function Hello() {
           return <h1>Hi</h1>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         class Boundary extends React.Component {
           state = {error: null};
@@ -2471,13 +2514,13 @@ describe('ReactFresh', () => {
 
         function App() {
           return (
-            <React.Fragment>
+            <>
               <p>A</p>
               <Boundary>
                 <Hello />
               </Boundary>
               <p>B</p>
-            </React.Fragment>
+            </>
           );
         }
 
@@ -2493,7 +2536,7 @@ describe('ReactFresh', () => {
         function Hello() {
           throw new Error('No');
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       expect(container.innerHTML).toBe('<p>A</p><h1>Oops: No</h1><p>B</p>');
@@ -2505,7 +2548,7 @@ describe('ReactFresh', () => {
         function Hello() {
           return <h1>Fixed!</h1>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       // This should remount the error boundary (but not anything above it).
@@ -2519,7 +2562,7 @@ describe('ReactFresh', () => {
         function Hello() {
           return <h1>Nice.</h1>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.firstChild.nextSibling).toBe(helloNode);
       expect(helloNode.textContent).toBe('Nice.');
@@ -2532,7 +2575,7 @@ describe('ReactFresh', () => {
         function Hello() {
           return <h1>Hi</h1>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         class Boundary extends React.Component {
           state = {error: null};
@@ -2549,13 +2592,13 @@ describe('ReactFresh', () => {
 
         function App() {
           return (
-            <React.Fragment>
+            <>
               <p>A</p>
               <Boundary>
                 <Hello />
               </Boundary>
               <p>B</p>
-            </React.Fragment>
+            </>
           );
         }
 
@@ -2571,7 +2614,7 @@ describe('ReactFresh', () => {
         function Hello() {
           throw new Error('No');
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       expect(container.innerHTML).toBe('<p>A</p><h1>Oops: No</h1><p>B</p>');
@@ -2583,7 +2626,7 @@ describe('ReactFresh', () => {
         function Hello() {
           return <h1>Fixed!</h1>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
 
       // This should remount the error boundary (but not anything above it).
@@ -2597,7 +2640,7 @@ describe('ReactFresh', () => {
         function Hello() {
           return <h1>Nice.</h1>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
       });
       expect(container.firstChild.nextSibling).toBe(helloNode);
       expect(helloNode.textContent).toBe('Nice.');
@@ -2613,7 +2656,7 @@ describe('ReactFresh', () => {
           x.slice(); // Doesn't throw initially.
           return <h1>Hi</h1>;
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
 
         class Boundary extends React.Component {
           state = {error: null};
@@ -2630,13 +2673,13 @@ describe('ReactFresh', () => {
 
         function App() {
           return (
-            <React.Fragment>
+            <>
               <p>A</p>
               <Boundary>
                 <Hello />
               </Boundary>
               <p>B</p>
-            </React.Fragment>
+            </>
           );
         }
 
@@ -2660,7 +2703,7 @@ describe('ReactFresh', () => {
             x.slice();
             return <h1>Hi</h1>;
           }
-          __register__(Hello, 'Hello');
+          $RefreshReg$(Hello, 'Hello');
         });
       });
 
@@ -2676,14 +2719,16 @@ describe('ReactFresh', () => {
       expect(container.firstChild.nextSibling.nextSibling).toBe(secondP);
 
       // Perform a hot update that fixes the error.
-      patch(() => {
-        function Hello() {
-          const [x] = React.useState('');
-          React.useEffect(() => {}, []); // Removes the bad effect code.
-          x.slice(); // Doesn't throw initially.
-          return <h1>Fixed!</h1>;
-        }
-        __register__(Hello, 'Hello');
+      act(() => {
+        patch(() => {
+          function Hello() {
+            const [x] = React.useState('');
+            React.useEffect(() => {}, []); // Removes the bad effect code.
+            x.slice(); // Doesn't throw initially.
+            return <h1>Fixed!</h1>;
+          }
+          $RefreshReg$(Hello, 'Hello');
+        });
       });
 
       // This should remount the error boundary (but not anything above it).
@@ -2693,17 +2738,138 @@ describe('ReactFresh', () => {
 
       // Verify next hot reload doesn't remount anything.
       const helloNode = container.firstChild.nextSibling;
-      patch(() => {
-        function Hello() {
-          const [x] = React.useState('');
-          React.useEffect(() => {}, []);
-          x.slice();
-          return <h1>Nice.</h1>;
-        }
-        __register__(Hello, 'Hello');
+      act(() => {
+        patch(() => {
+          function Hello() {
+            const [x] = React.useState('');
+            React.useEffect(() => {}, []);
+            x.slice();
+            return <h1>Nice.</h1>;
+          }
+          $RefreshReg$(Hello, 'Hello');
+        });
       });
+
       expect(container.firstChild.nextSibling).toBe(helloNode);
       expect(helloNode.textContent).toBe('Nice.');
+    }
+  });
+
+  // TODO: we can make this recoverable in the future
+  // if we add a way to track the last attempted element.
+  it('records an unrecoverable error if a root fails on mount', () => {
+    if (__DEV__) {
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+      expect(() => {
+        render(() => {
+          function Hello() {
+            throw new Error('No');
+          }
+          $RefreshReg$(Hello, 'Hello');
+
+          return Hello;
+        });
+      }).toThrow('No');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(true);
+    }
+  });
+
+  it('remounts a failed root on update', () => {
+    if (__DEV__) {
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+      render(() => {
+        function Hello() {
+          return <h1>Hi</h1>;
+        }
+        $RefreshReg$(Hello, 'Hello');
+
+        return Hello;
+      });
+      expect(container.innerHTML).toBe('<h1>Hi</h1>');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+
+      // Perform a hot update that fails.
+      // This removes the root.
+      expect(() => {
+        patch(() => {
+          function Hello() {
+            throw new Error('No');
+          }
+          $RefreshReg$(Hello, 'Hello');
+        });
+      }).toThrow('No');
+      expect(container.innerHTML).toBe('');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+
+      // A bad retry
+      expect(() => {
+        patch(() => {
+          function Hello() {
+            throw new Error('Not yet');
+          }
+          $RefreshReg$(Hello, 'Hello');
+        });
+      }).toThrow('Not yet');
+      expect(container.innerHTML).toBe('');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+
+      // Perform a hot update that fixes the error.
+      patch(() => {
+        function Hello() {
+          return <h1>Fixed!</h1>;
+        }
+        $RefreshReg$(Hello, 'Hello');
+      });
+      // This should remount the root.
+      expect(container.innerHTML).toBe('<h1>Fixed!</h1>');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+
+      // Verify next hot reload doesn't remount anything.
+      let helloNode = container.firstChild;
+      patch(() => {
+        function Hello() {
+          return <h1>Nice.</h1>;
+        }
+        $RefreshReg$(Hello, 'Hello');
+      });
+      expect(container.firstChild).toBe(helloNode);
+      expect(helloNode.textContent).toBe('Nice.');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+
+      // Break again.
+      expect(() => {
+        patch(() => {
+          function Hello() {
+            throw new Error('Oops');
+          }
+          $RefreshReg$(Hello, 'Hello');
+        });
+      }).toThrow('Oops');
+      expect(container.innerHTML).toBe('');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+
+      // Perform a hot update that fixes the error.
+      patch(() => {
+        function Hello() {
+          return <h1>At last.</h1>;
+        }
+        $RefreshReg$(Hello, 'Hello');
+      });
+      // This should remount the root.
+      expect(container.innerHTML).toBe('<h1>At last.</h1>');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
+
+      // Check we don't attempt to reverse an intentional unmount.
+      ReactDOM.unmountComponentAtNode(container);
+      expect(container.innerHTML).toBe('');
+      patch(() => {
+        function Hello() {
+          return <h1>Never mind me!</h1>;
+        }
+        $RefreshReg$(Hello, 'Hello');
+      });
+      expect(container.innerHTML).toBe('');
+      expect(ReactFreshRuntime.hasUnrecoverableErrors()).toBe(false);
     }
   });
 
@@ -2730,7 +2896,7 @@ describe('ReactFresh', () => {
         // Normally classes would get a different type and remount anyway,
         // but at module boundaries we may want to prevent propagation.
         // However we still want to force a remount and use latest version.
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -2760,7 +2926,7 @@ describe('ReactFresh', () => {
             );
           }
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -2797,7 +2963,7 @@ describe('ReactFresh', () => {
             );
           }
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -2820,6 +2986,80 @@ describe('ReactFresh', () => {
     }
   });
 
+  it('updates refs when remounting', () => {
+    if (__DEV__) {
+      const testRef = React.createRef();
+      render(
+        () => {
+          class Hello extends React.Component {
+            getColor() {
+              return 'green';
+            }
+            render() {
+              return <p />;
+            }
+          }
+          $RefreshReg$(Hello, 'Hello');
+          return Hello;
+        },
+        {ref: testRef},
+      );
+      expect(testRef.current.getColor()).toBe('green');
+
+      patch(() => {
+        class Hello extends React.Component {
+          getColor() {
+            return 'orange';
+          }
+          render() {
+            return <p />;
+          }
+        }
+        $RefreshReg$(Hello, 'Hello');
+      });
+      expect(testRef.current.getColor()).toBe('orange');
+
+      patch(() => {
+        const Hello = React.forwardRef((props, ref) => {
+          React.useImperativeHandle(ref, () => ({
+            getColor() {
+              return 'pink';
+            },
+          }));
+          return <p />;
+        });
+        $RefreshReg$(Hello, 'Hello');
+      });
+      expect(testRef.current.getColor()).toBe('pink');
+
+      patch(() => {
+        const Hello = React.forwardRef((props, ref) => {
+          React.useImperativeHandle(ref, () => ({
+            getColor() {
+              return 'yellow';
+            },
+          }));
+          return <p />;
+        });
+        $RefreshReg$(Hello, 'Hello');
+      });
+      expect(testRef.current.getColor()).toBe('yellow');
+
+      patch(() => {
+        const Hello = React.forwardRef((props, ref) => {
+          React.useImperativeHandle(ref, () => ({
+            getColor() {
+              return 'yellow';
+            },
+          }));
+          return <p />;
+        });
+        $RefreshReg$(Hello, 'Hello');
+      });
+      expect(testRef.current.getColor()).toBe('yellow');
+    }
+  });
+
   it('remounts on conversion from class to function and back', () => {
     if (__DEV__) {
       let HelloV1 = render(() => {
@@ -2831,7 +3071,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -2861,7 +3101,7 @@ describe('ReactFresh', () => {
             );
           }
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -2892,7 +3132,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
 
@@ -2923,7 +3163,7 @@ describe('ReactFresh', () => {
             </p>
           );
         }
-        __register__(Hello, 'Hello');
+        $RefreshReg$(Hello, 'Hello');
         return Hello;
       });
       expect(container.firstChild).toBe(finalEl);
@@ -2938,7 +3178,7 @@ describe('ReactFresh', () => {
         function Child({children}) {
           return <div className="Child">{children}</div>;
         }
-        __register__(Child, 'Child');
+        $RefreshReg$(Child, 'Child');
 
         function Parent({children}) {
           return (
@@ -2952,7 +3192,7 @@ describe('ReactFresh', () => {
             </div>
           );
         }
-        __register__(Parent, 'Parent');
+        $RefreshReg$(Parent, 'Parent');
 
         function App() {
           return (
@@ -2967,7 +3207,7 @@ describe('ReactFresh', () => {
             </div>
           );
         }
-        __register__(App, 'App');
+        $RefreshReg$(App, 'App');
 
         class Cls extends React.Component {
           render() {
@@ -2982,21 +3222,21 @@ describe('ReactFresh', () => {
         function Empty() {
           return null;
         }
-        __register__(Empty, 'Empty');
+        $RefreshReg$(Empty, 'Empty');
 
         function Frag() {
           return (
-            <React.Fragment>
+            <>
               <div className="Frag">
                 <div />
               </div>
               <div className="Frag">
                 <div />
               </div>
-            </React.Fragment>
+            </>
           );
         }
-        __register__(Frag, 'Frag');
+        $RefreshReg$(Frag, 'Frag');
 
         return App;
       });
@@ -3051,7 +3291,7 @@ describe('ReactFresh', () => {
           </p>
         );
       };
-      __register__(HelloV1, 'Hello');
+      $RefreshReg$(HelloV1, 'Hello');
 
       // Perform a hot update before any roots exist.
       const HelloV2 = () => {
@@ -3062,7 +3302,7 @@ describe('ReactFresh', () => {
           </p>
         );
       };
-      __register__(HelloV2, 'Hello');
+      $RefreshReg$(HelloV2, 'Hello');
       ReactFreshRuntime.performReactRefresh();
 
       // Mount three roots.
@@ -3113,7 +3353,7 @@ describe('ReactFresh', () => {
             </p>
           );
         };
-        __register__(HelloV3, 'Hello');
+        $RefreshReg$(HelloV3, 'Hello');
         ReactFreshRuntime.performReactRefresh();
 
         // It should affect all roots.
@@ -3138,7 +3378,7 @@ describe('ReactFresh', () => {
             </p>
           );
         };
-        __register__(HelloV4, 'Hello');
+        $RefreshReg$(HelloV4, 'Hello');
         expect(() => {
           ReactFreshRuntime.performReactRefresh();
         }).toThrow('Oops.');
@@ -3264,6 +3504,37 @@ describe('ReactFresh', () => {
         expect(ReactFreshRuntime.isLikelyComponentType(Point)).toBe(false);
       `,
       )(global, React, ReactFreshRuntime, expect, createReactClass);
+    }
+  });
+
+  it('reports updated and remounted families to the caller', () => {
+    if (__DEV__) {
+      const HelloV1 = () => {
+        const [val, setVal] = React.useState(0);
+        return (
+          <p style={{color: 'blue'}} onClick={() => setVal(val + 1)}>
+            {val}
+          </p>
+        );
+      };
+      $RefreshReg$(HelloV1, 'Hello');
+
+      const HelloV2 = () => {
+        const [val, setVal] = React.useState(0);
+        return (
+          <p style={{color: 'red'}} onClick={() => setVal(val + 1)}>
+            {val}
+          </p>
+        );
+      };
+      $RefreshReg$(HelloV2, 'Hello');
+
+      const update = ReactFreshRuntime.performReactRefresh();
+      expect(update.updatedFamilies.size).toBe(1);
+      expect(update.staleFamilies.size).toBe(0);
+      const family = update.updatedFamilies.values().next().value;
+      expect(family.current.name).toBe('HelloV2');
+      // For example, we can use this to print a log of what was updated.
     }
   });
 });

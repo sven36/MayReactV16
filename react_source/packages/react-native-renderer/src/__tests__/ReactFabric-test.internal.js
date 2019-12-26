@@ -22,6 +22,10 @@ let NativeMethodsMixin;
 const SET_NATIVE_PROPS_NOT_SUPPORTED_MESSAGE =
   'Warning: setNativeProps is not currently supported in Fabric';
 
+const DISPATCH_COMMAND_REQUIRES_HOST_COMPONENT =
+  "Warning: dispatchCommand was called with a ref that isn't a " +
+  'native component. Use React.forwardRef to get access to the underlying native component';
+
 jest.mock('shared/ReactFeatureFlags', () =>
   require('shared/forks/ReactFeatureFlags.native-oss'),
 );
@@ -34,9 +38,8 @@ describe('ReactFabric', () => {
 
     React = require('react');
     StrictMode = React.StrictMode;
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
-    ReactFeatureFlags.warnAboutDeprecatedSetNativeProps = true;
     ReactFabric = require('react-native-renderer/fabric');
+    ReactFeatureFlags = require('shared/ReactFeatureFlags');
     UIManager = require('react-native/Libraries/ReactPrivate/ReactNativePrivateInterface')
       .UIManager;
     createReactClass = require('create-react-class/factory')(
@@ -255,35 +258,37 @@ describe('ReactFabric', () => {
     });
   });
 
-  it('setNativeProps on native refs should no-op', () => {
+  it('should call dispatchCommand for native refs', () => {
     const View = createReactNativeComponentClass('RCTView', () => ({
       validAttributes: {foo: true},
       uiViewClassName: 'RCTView',
     }));
 
-    UIManager.updateView.mockReset();
+    [View].forEach(Component => {
+      nativeFabricUIManager.dispatchCommand.mockClear();
 
-    let viewRef;
-    ReactFabric.render(
-      <View
-        foo="bar"
-        ref={ref => {
-          viewRef = ref;
-        }}
-      />,
-      11,
-    );
+      let viewRef;
+      ReactFabric.render(
+        <Component
+          ref={ref => {
+            viewRef = ref;
+          }}
+        />,
+        11,
+      );
 
-    expect(UIManager.updateView).not.toBeCalled();
-    expect(() => {
-      ReactFabric.setNativeProps(viewRef, {foo: 'baz'});
-    }).toWarnDev([SET_NATIVE_PROPS_NOT_SUPPORTED_MESSAGE], {
-      withoutStack: true,
+      expect(nativeFabricUIManager.dispatchCommand).not.toBeCalled();
+      ReactFabric.dispatchCommand(viewRef, 'updateCommand', [10, 20]);
+      expect(nativeFabricUIManager.dispatchCommand).toHaveBeenCalledTimes(1);
+      expect(nativeFabricUIManager.dispatchCommand).toHaveBeenCalledWith(
+        expect.any(Object),
+        'updateCommand',
+        [10, 20],
+      );
     });
-    expect(UIManager.updateView).not.toBeCalled();
   });
 
-  it('should warn and no-op if calling setNativeProps on non native refs', () => {
+  it('should warn and no-op if calling dispatchCommand on non native refs', () => {
     const View = createReactNativeComponentClass('RCTView', () => ({
       validAttributes: {foo: true},
       uiViewClassName: 'RCTView',
@@ -309,12 +314,11 @@ describe('ReactFabric', () => {
     });
 
     [BasicClass, Subclass, CreateClass].forEach(Component => {
-      UIManager.updateView.mockReset();
+      nativeFabricUIManager.dispatchCommand.mockReset();
 
       let viewRef;
       ReactFabric.render(
         <Component
-          foo="bar"
           ref={ref => {
             viewRef = ref;
           }}
@@ -322,14 +326,14 @@ describe('ReactFabric', () => {
         11,
       );
 
-      expect(UIManager.updateView).not.toBeCalled();
+      expect(nativeFabricUIManager.dispatchCommand).not.toBeCalled();
       expect(() => {
-        ReactFabric.setNativeProps(viewRef, {foo: 'baz'});
-      }).toWarnDev([SET_NATIVE_PROPS_NOT_SUPPORTED_MESSAGE], {
+        ReactFabric.dispatchCommand(viewRef, 'updateCommand', [10, 20]);
+      }).toWarnDev([DISPATCH_COMMAND_REQUIRES_HOST_COMPONENT], {
         withoutStack: true,
       });
 
-      expect(UIManager.updateView).not.toBeCalled();
+      expect(nativeFabricUIManager.dispatchCommand).not.toBeCalled();
     });
   });
 
@@ -777,6 +781,281 @@ describe('ReactFabric', () => {
     expect(touchStart2).toBeCalled();
   });
 
+  it('dispatches event with target as reactTag', () => {
+    ReactFeatureFlags.enableNativeTargetAsInstance = false;
+
+    const View = createReactNativeComponentClass('RCTView', () => ({
+      validAttributes: {
+        id: true,
+      },
+      uiViewClassName: 'RCTView',
+      directEventTypes: {
+        topTouchStart: {
+          registrationName: 'onTouchStart',
+        },
+        topTouchEnd: {
+          registrationName: 'onTouchEnd',
+        },
+      },
+    }));
+
+    function getViewById(id) {
+      const [
+        reactTag,
+        ,
+        ,
+        ,
+        instanceHandle,
+      ] = nativeFabricUIManager.createNode.mock.calls.find(
+        args => args[3] && args[3].id === id,
+      );
+
+      return {reactTag, instanceHandle};
+    }
+
+    const ref1 = React.createRef();
+    const ref2 = React.createRef();
+
+    ReactFabric.render(
+      <View id="parent">
+        <View
+          ref={ref1}
+          id="one"
+          onResponderStart={event => {
+            expect(ref1.current).not.toBeNull();
+            expect(ReactFabric.findNodeHandle(ref1.current)).toEqual(
+              event.target,
+            );
+            expect(ReactFabric.findNodeHandle(ref1.current)).toEqual(
+              event.currentTarget,
+            );
+          }}
+          onStartShouldSetResponder={() => true}
+        />
+        <View
+          ref={ref2}
+          id="two"
+          onResponderStart={event => {
+            expect(ref2.current).not.toBeNull();
+            expect(ReactFabric.findNodeHandle(ref2.current)).toEqual(
+              event.target,
+            );
+            expect(ReactFabric.findNodeHandle(ref2.current)).toEqual(
+              event.currentTarget,
+            );
+          }}
+          onStartShouldSetResponder={() => true}
+        />
+      </View>,
+      1,
+    );
+
+    let [
+      dispatchEvent,
+    ] = nativeFabricUIManager.registerEventHandler.mock.calls[0];
+
+    dispatchEvent(getViewById('one').instanceHandle, 'topTouchStart', {
+      target: getViewById('one').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+    dispatchEvent(getViewById('one').instanceHandle, 'topTouchEnd', {
+      target: getViewById('one').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+
+    dispatchEvent(getViewById('two').instanceHandle, 'topTouchStart', {
+      target: getViewById('two').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+
+    dispatchEvent(getViewById('two').instanceHandle, 'topTouchEnd', {
+      target: getViewById('two').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+
+    expect.assertions(6);
+  });
+
+  it('dispatches event with target as instance', () => {
+    ReactFeatureFlags.enableNativeTargetAsInstance = true;
+
+    const View = createReactNativeComponentClass('RCTView', () => ({
+      validAttributes: {
+        id: true,
+      },
+      uiViewClassName: 'RCTView',
+      directEventTypes: {
+        topTouchStart: {
+          registrationName: 'onTouchStart',
+        },
+        topTouchEnd: {
+          registrationName: 'onTouchEnd',
+        },
+      },
+    }));
+
+    function getViewById(id) {
+      const [
+        reactTag,
+        ,
+        ,
+        ,
+        instanceHandle,
+      ] = nativeFabricUIManager.createNode.mock.calls.find(
+        args => args[3] && args[3].id === id,
+      );
+
+      return {reactTag, instanceHandle};
+    }
+
+    const ref1 = React.createRef();
+    const ref2 = React.createRef();
+
+    ReactFabric.render(
+      <View id="parent">
+        <View
+          ref={ref1}
+          id="one"
+          onResponderStart={event => {
+            expect(ref1.current).not.toBeNull();
+            // Check for referential equality
+            expect(ref1.current).toBe(event.target);
+            expect(ref1.current).toBe(event.currentTarget);
+          }}
+          onStartShouldSetResponder={() => true}
+        />
+        <View
+          ref={ref2}
+          id="two"
+          onResponderStart={event => {
+            expect(ref2.current).not.toBeNull();
+            // Check for referential equality
+            expect(ref2.current).toBe(event.target);
+            expect(ref2.current).toBe(event.currentTarget);
+          }}
+          onStartShouldSetResponder={() => true}
+        />
+      </View>,
+      1,
+    );
+
+    let [
+      dispatchEvent,
+    ] = nativeFabricUIManager.registerEventHandler.mock.calls[0];
+
+    dispatchEvent(getViewById('one').instanceHandle, 'topTouchStart', {
+      target: getViewById('one').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+    dispatchEvent(getViewById('one').instanceHandle, 'topTouchEnd', {
+      target: getViewById('one').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+
+    dispatchEvent(getViewById('two').instanceHandle, 'topTouchStart', {
+      target: getViewById('two').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+
+    dispatchEvent(getViewById('two').instanceHandle, 'topTouchEnd', {
+      target: getViewById('two').reactTag,
+      identifier: 17,
+      touches: [],
+      changedTouches: [],
+    });
+
+    expect.assertions(6);
+  });
+
+  it('findHostInstance_DEPRECATED should warn if used to find a host component inside StrictMode', () => {
+    const View = createReactNativeComponentClass('RCTView', () => ({
+      validAttributes: {foo: true},
+      uiViewClassName: 'RCTView',
+    }));
+
+    let parent = undefined;
+    let child = undefined;
+
+    class ContainsStrictModeChild extends React.Component {
+      render() {
+        return (
+          <StrictMode>
+            <View ref={n => (child = n)} />
+          </StrictMode>
+        );
+      }
+    }
+
+    ReactFabric.render(<ContainsStrictModeChild ref={n => (parent = n)} />, 11);
+
+    let match;
+    expect(
+      () => (match = ReactFabric.findHostInstance_DEPRECATED(parent)),
+    ).toWarnDev([
+      'Warning: findHostInstance_DEPRECATED is deprecated in StrictMode. ' +
+        'findHostInstance_DEPRECATED was passed an instance of ContainsStrictModeChild which renders StrictMode children. ' +
+        'Instead, add a ref directly to the element you want to reference. ' +
+        'Learn more about using refs safely here: ' +
+        'https://fb.me/react-strict-mode-find-node' +
+        '\n    in RCTView (at **)' +
+        '\n    in StrictMode (at **)' +
+        '\n    in ContainsStrictModeChild (at **)',
+    ]);
+    expect(match).toBe(child);
+  });
+
+  it('findHostInstance_DEPRECATED should warn if passed a component that is inside StrictMode', () => {
+    const View = createReactNativeComponentClass('RCTView', () => ({
+      validAttributes: {foo: true},
+      uiViewClassName: 'RCTView',
+    }));
+
+    let parent = undefined;
+    let child = undefined;
+
+    class IsInStrictMode extends React.Component {
+      render() {
+        return <View ref={n => (child = n)} />;
+      }
+    }
+
+    ReactFabric.render(
+      <StrictMode>
+        <IsInStrictMode ref={n => (parent = n)} />
+      </StrictMode>,
+      11,
+    );
+
+    let match;
+    expect(
+      () => (match = ReactFabric.findHostInstance_DEPRECATED(parent)),
+    ).toWarnDev([
+      'Warning: findHostInstance_DEPRECATED is deprecated in StrictMode. ' +
+        'findHostInstance_DEPRECATED was passed an instance of IsInStrictMode which is inside StrictMode. ' +
+        'Instead, add a ref directly to the element you want to reference. ' +
+        'Learn more about using refs safely here: ' +
+        'https://fb.me/react-strict-mode-find-node' +
+        '\n    in RCTView (at **)' +
+        '\n    in IsInStrictMode (at **)' +
+        '\n    in StrictMode (at **)',
+    ]);
+    expect(match).toBe(child);
+  });
+
   it('findNodeHandle should warn if used to find a host component inside StrictMode', () => {
     const View = createReactNativeComponentClass('RCTView', () => ({
       validAttributes: {foo: true},
@@ -802,14 +1081,12 @@ describe('ReactFabric', () => {
     expect(() => (match = ReactFabric.findNodeHandle(parent))).toWarnDev([
       'Warning: findNodeHandle is deprecated in StrictMode. ' +
         'findNodeHandle was passed an instance of ContainsStrictModeChild which renders StrictMode children. ' +
-        'Instead, add a ref directly to the element you want to reference.' +
-        '\n' +
+        'Instead, add a ref directly to the element you want to reference. ' +
+        'Learn more about using refs safely here: ' +
+        'https://fb.me/react-strict-mode-find-node' +
         '\n    in RCTView (at **)' +
         '\n    in StrictMode (at **)' +
-        '\n    in ContainsStrictModeChild (at **)' +
-        '\n' +
-        '\nLearn more about using refs safely here:' +
-        '\nhttps://fb.me/react-strict-mode-find-node',
+        '\n    in ContainsStrictModeChild (at **)',
     ]);
     expect(match).toBe(child._nativeTag);
   });
@@ -840,14 +1117,12 @@ describe('ReactFabric', () => {
     expect(() => (match = ReactFabric.findNodeHandle(parent))).toWarnDev([
       'Warning: findNodeHandle is deprecated in StrictMode. ' +
         'findNodeHandle was passed an instance of IsInStrictMode which is inside StrictMode. ' +
-        'Instead, add a ref directly to the element you want to reference.' +
-        '\n' +
+        'Instead, add a ref directly to the element you want to reference. ' +
+        'Learn more about using refs safely here: ' +
+        'https://fb.me/react-strict-mode-find-node' +
         '\n    in RCTView (at **)' +
         '\n    in IsInStrictMode (at **)' +
-        '\n    in StrictMode (at **)' +
-        '\n' +
-        '\nLearn more about using refs safely here:' +
-        '\nhttps://fb.me/react-strict-mode-find-node',
+        '\n    in StrictMode (at **)',
     ]);
     expect(match).toBe(child._nativeTag);
   });
