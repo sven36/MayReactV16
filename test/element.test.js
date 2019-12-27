@@ -65,8 +65,6 @@ describe('A.js', () => {
 		var container = document.createElement('div');
 		document.body.appendChild(container);
 		class Child extends React.Component {
-
-
 			render() {
 				return (
 					<div>
@@ -85,7 +83,7 @@ describe('A.js', () => {
 			render() {
 				return (
 					<React.Fragment>
-						<div className="mystyle" onClick={this.Change} key='B1'>
+						<div className="mystyle" style={{ width: '40%', marginLeft: '30px', backgroundColor: 'blue' }} onClick={this.Change} key='B1'>
 							{'C1'}
 							{this.state.val}
 						</div>
@@ -94,7 +92,7 @@ describe('A.js', () => {
 				);
 			}
 		}
-		debugger
+		// debugger
 		ReactDOM.render(<A />, container);
 		expect(console.error.calls.count()).toBe(0);
 	});
