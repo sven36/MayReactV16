@@ -15,7 +15,7 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var React = require('react');
+var React = require('../../react/index');
 var _assign = require('object-assign');
 var Scheduler = require('scheduler');
 var checkPropTypes = require('prop-types/checkPropTypes');

@@ -93,7 +93,7 @@ describe('A.js', () => {
 			}
 		}
 		// debugger
-		ReactDOM.render(<A />, container);
+		// ReactDOM.render(<A />, container);
 		expect(console.error.calls.count()).toBe(0);
 	});
 
