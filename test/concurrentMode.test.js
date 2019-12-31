@@ -35,9 +35,8 @@ describe('ConcurrentMode.js', () => {
             let handleChange = (e) => {
                 let target = e && e.target;
                 let v = target && target.value;
-                if (confusingComputations()) {
-                    setVal(v);
-                }
+                setVal(v);
+
             }
             let inputStyle = {
                 display: 'block',
@@ -49,6 +48,7 @@ describe('ConcurrentMode.js', () => {
                 <React.Fragment>
                     <input onChange={handleChange} style={inputStyle} />
                     {val}
+                    {confusingComputations()}
                     <C1 />
                 </React.Fragment>
             );
@@ -81,22 +81,22 @@ describe('ConcurrentMode.js', () => {
         ReactDOM.render(<A1 />, container);
         expect(console.error.calls.count()).toBe(0);
     })
-    it('does not fall into an infinite update loop with useLayoutEffect', () => {
-        function NonTerminating() {
-            const [step, setStep] = React.useState(0);
-            // React.useLayoutEffect(() => {
-            //     setStep(x => x + 1);
-            // });
-            return step;
-        }
+    // it('does not fall into an infinite update loop with useLayoutEffect', () => {
+    //     function NonTerminating() {
+    //         const [step, setStep] = React.useState(0);
+    //         // React.useLayoutEffect(() => {
+    //         //     setStep(x => x + 1);
+    //         // });
+    //         return step;
+    //     }
 
-        const container = document.createElement('div');
-        ReactDOM.render(<NonTerminating />, container);
-    });
+    //     const container = document.createElement('div');
+    //     ReactDOM.render(<NonTerminating />, container);
+    // });
 })
 
 function confusingComputations() {
-    const iterations = 100;
+    const iterations = 10;
     const multiplier = 1000000000;
     var primes = [];
     for (var i = 0; i < iterations; i++) {
@@ -113,5 +113,5 @@ function confusingComputations() {
             primes.push(candidate);
         }
     }
-    return primes;
+    return primes.length;
 }
