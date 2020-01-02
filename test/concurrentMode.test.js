@@ -70,8 +70,11 @@ describe('ConcurrentMode.js', () => {
             let containerStyle = {
                 color: 'black'
             }
+            let wrappClick = (e) => {
+                console.log(e);
+            }
             return (
-                <div style={containerStyle}>
+                <div style={containerStyle} onClick={wrappClick}>
                     <B1 />
                 </div>
             );
