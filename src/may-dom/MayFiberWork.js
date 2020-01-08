@@ -69,7 +69,15 @@ function setInitialProperties(domElement, tag, nextProps, rootContainerElement, 
         case 'embed':
 
             break;
-
+        case 'video':
+        case 'audio':
+            //React不是所有事件都挂载在document上 比如媒体事件就不是
+            // Create listener for each media event
+            // for (var i = 0; i < mediaEventTypes.length; i++) {
+            //     trapBubbledEvent(mediaEventTypes[i], domElement);
+            // }
+            props = nextProps;
+            break;
         default:
             props = nextProps;
 
@@ -79,40 +87,72 @@ function setInitialProperties(domElement, tag, nextProps, rootContainerElement, 
     for (const key in nextProps) {
         if (nextProps.hasOwnProperty(key)) {
             const nextProp = nextProps[key];
-            switch (key) {
-                case 'style':
-
-                    break;
-                case 'dangerouslySetInnerHTML':
-
-                    break;
-                case 'children':
-                    if (typeof nextProp === 'string') {
-                        let canSetTextContent = tag !== 'textarea' || nextProp !== '';
-
-                        if (canSetTextContent) {
-                            domElement.textContent = nextProp;
-                            // if (text) {
-                            //     var firstChild = node.firstChild;
-
-                            //     if (firstChild && firstChild === node.lastChild && firstChild.nodeType === TEXT_NODE) {
-                            //       firstChild.nodeValue = text;
-                            //       return;
-                            //     }
-                            //   }
-                            //   setTextContent(domElement, nextProp);
+            if (!/^on[A-Z]/.test(key)) {
+                switch (key) {
+                    case 'style':
+                        for (let name in nextProp) {
+                            let cssName = name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^ms-/i, '-ms-');
+                            dom.style[cssName] = nextProp[name];
                         }
-                    }
-                    break;
+                        break;
+                    case 'dangerouslySetInnerHTML':
 
-                default:
-                    break;
+                        break;
+                    case 'children':
+                        if (typeof nextProp === 'string') {
+                            let canSetTextContent = tag !== 'textarea' || nextProp !== '';
+
+                            if (canSetTextContent) {
+                                domElement.textContent = nextProp;
+                                // if (text) {
+                                //     var firstChild = node.firstChild;
+
+                                //     if (firstChild && firstChild === node.lastChild && firstChild.nodeType === TEXT_NODE) {
+                                //       firstChild.nodeValue = text;
+                                //       return;
+                                //     }
+                                //   }
+                                //   setTextContent(domElement, nextProp);
+                            }
+                        }
+                        break;
+                    case 'className':
+                        domElement.setAttribute('class', nextProp);
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                //event DOCUMENT_NODE 9 DOCUMENT_FRAGMENT_NODE 11
+                let isDocumentOrFragment = domElement.nodeType === 9 || domElement.nodeType === 11;
+                let doc = isDocumentOrFragment ? domElement : document;
+                //
+                let listenedEvents = elementListeningSets.get(doc);
+                if (!listenedEvents) {
+                    listenedEvents = new Set();
+                    elementListeningSets.set(doc, listenedEvents);
+                }
+                //针对click change等事件 
+                let event = key.substring(2).toLowerCase();
+                if (!listenedEvents.has(event)) {
+                    //(mediaEventTypes) 媒体事件没有冒泡一说所以不会挂在document上;
+                    //["abort", "canplay", "canplaythrough", "durationchange", "emptied", "encrypted", "ended", "error", 
+                    //"loadeddata", "loadedmetadata", "loadstart", "pause", "play", "playing", "progress", "ratechange",
+                    // "seeked", "seeking", "stalled", "suspend", "timeupdate", "volumechange", "waiting"]
+
+                    
+                } else {
+
+                }
             }
+
         }
     }
 
 
 }
+//TODO 
+let elementListeningSets = new WeakMap();
 
 
 

@@ -81,7 +81,7 @@ describe('ConcurrentMode.js', () => {
         }
 
         // debugger
-        ReactDOM.render(<A1 />, container);
+        // ReactDOM.render(<A1 />, container);
         expect(console.error.calls.count()).toBe(0);
     })
     // it('does not fall into an infinite update loop with useLayoutEffect', () => {
