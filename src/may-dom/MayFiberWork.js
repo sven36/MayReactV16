@@ -92,7 +92,7 @@ function setInitialProperties(domElement, tag, nextProps, rootContainerElement, 
                     case 'style':
                         for (let name in nextProp) {
                             let cssName = name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^ms-/i, '-ms-');
-                            dom.style[cssName] = nextProp[name];
+                            domElement.style[cssName] = nextProp[name];
                         }
                         break;
                     case 'dangerouslySetInnerHTML':
@@ -132,17 +132,46 @@ function setInitialProperties(domElement, tag, nextProps, rootContainerElement, 
                     listenedEvents = new Set();
                     elementListeningSets.set(doc, listenedEvents);
                 }
-                //针对click change等事件 
-                let event = key.substring(2).toLowerCase();
-                if (!listenedEvents.has(event)) {
-                    //(mediaEventTypes) 媒体事件没有冒泡一说所以不会挂在document上;
-                    //["abort", "canplay", "canplaythrough", "durationchange", "emptied", "encrypted", "ended", "error", 
-                    //"loadeddata", "loadedmetadata", "loadstart", "pause", "play", "playing", "progress", "ratechange",
-                    // "seeked", "seeking", "stalled", "suspend", "timeupdate", "volumechange", "waiting"]
+                let eventDependencies = {
+                    'onClick': ['click'],
+                    'onChange': ["blur", "change", "click", "focus", "input", "keydown", "keyup", "selectionchange"]
+                }
+                let eventPriority = {
+                    'click': 0,
+                    'drag': 1,
+                    'animationstart': 2,
+                }
 
-                    
-                } else {
+                if (eventDependencies[key]) {
+                    for (let i = 0; i < eventDependencies[key].length; i++) {
+                        //针对click change等事件 
+                        let event = eventDependencies[key][i];
 
+                        if (!listenedEvents.has(event)) {
+                            //(mediaEventTypes) 媒体事件没有冒泡一说所以不会挂在document上;
+                            let mediaEventTypes = ["abort", "canplay", "canplaythrough", "durationchange", "emptied", "encrypted", "ended", "error", "loadeddata", "loadedmetadata", "loadstart", "pause", "play", "playing", "progress", "ratechange", "seeked", "seeking", "stalled", "suspend", "timeupdate", "volumechange", "waiting"];
+                            if (mediaEventTypes.indexOf(event) === -1) {
+                                let listener = null;
+                                switch (eventPriority[event]) {
+                                    case 0://DiscreteEvent 离散型事件/独立型事件
+                                    
+                                        break;
+                                    case 1://UserBlockingEvent 用户阻塞型事件
+
+                                        break;
+                                    case 2://ContinuousEvent 持续型事件
+
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                doc.addEventListener(event, listener, false);
+                            }
+
+                        } else {
+
+                        }
+                    }
                 }
             }
 
