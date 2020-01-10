@@ -20,7 +20,7 @@ describe('may.js', () => {
 		class Parent extends React.Component {
 			constructor() {
 				super();
-				this.state = { val: 'I wonder' };
+				this.state = { val: 'may Test' };
 			}
 			Change = () => {
 				this.setState({ val: 'I see' });
