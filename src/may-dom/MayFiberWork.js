@@ -59,7 +59,14 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
 }
 
 
-//初始化dom属性
+/**
+ * 
+ * @param {Object} domElement 真实dom节点如div
+ * @param {String} tag dom type 如div input video等
+ * @param {Object} nextProps dom属性
+ * @param {Object} rootContainerElement 容器节点
+ * @param {Boolean} isCustomComponentTag 
+ */
 function setInitialProperties(domElement, tag, nextProps, rootContainerElement, isCustomComponentTag) {
     // const isCustomComponentTag = isCustomComponent(tag, rawProps);
     let props;
