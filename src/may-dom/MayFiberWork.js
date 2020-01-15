@@ -92,100 +92,104 @@ function setInitialProperties(domElement, tag, nextProps, rootContainerElement, 
     }
     //setInitialDOMProperties(tag, domElement, rootContainerElement, props, isCustomComponentTag);
     for (const key in nextProps) {
-        if (nextProps.hasOwnProperty(key)) {
-            const nextProp = nextProps[key];
-            if (!/^on[A-Z]/.test(key)) {
-                switch (key) {
-                    case 'style':
-                        for (let name in nextProp) {
-                            let cssName = name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^ms-/i, '-ms-');
-                            domElement.style[cssName] = nextProp[name];
+        //nextProp:DOM属性如onClick className,style等
+        const nextProp = nextProps[key];
+        if (!/^on[A-Z]/.test(key)) {
+            switch (key) {
+                case 'style':
+                    for (let name in nextProp) {
+                        let cssName = name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^ms-/i, '-ms-');
+                        domElement.style[cssName] = nextProp[name];
+                    }
+                    break;
+                case 'dangerouslySetInnerHTML':
+
+                    break;
+                case 'children':
+                    if (typeof nextProp === 'string') {
+                        let canSetTextContent = tag !== 'textarea' || nextProp !== '';
+
+                        if (canSetTextContent) {
+                            domElement.textContent = nextProp;
+                            // if (text) {
+                            //     var firstChild = node.firstChild;
+
+                            //     if (firstChild && firstChild === node.lastChild && firstChild.nodeType === TEXT_NODE) {
+                            //       firstChild.nodeValue = text;
+                            //       return;
+                            //     }
+                            //   }
+                            //   setTextContent(domElement, nextProp);
                         }
-                        break;
-                    case 'dangerouslySetInnerHTML':
+                    }
+                    break;
+                case 'className':
+                    domElement.setAttribute('class', nextProp);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            //React大部分事件是挂载在document上的
+            //event DOCUMENT_NODE 9 DOCUMENT_FRAGMENT_NODE 11
+            let isDocumentOrFragment = domElement.nodeType === 9 || domElement.nodeType === 11;
+            let doc = isDocumentOrFragment ? domElement : document;
+            //let elementListeningSets = new WeakMap();
+            //React并不是所有事件都委托在doc，针对每个真实元素的事件React都通过Set存储(同样事件只挂载一次)
+            let listenedEvents = elementListeningSets.get(doc);
+            if (!listenedEvents) {
+                listenedEvents = new Set();
+                elementListeningSets.set(doc, listenedEvents);
+            }
+            //React通过一个对象维护各个事件对应的真实事件如onClick对应click
+            //但是也有很多例外如onChange事件
+            let eventDependencies = {
+                'onClick': ['click'],
+                'onClickCapture': ['click'],
+                'onMouseEnter': ["mouseout", "mouseover"],
+                'onMouseOver': ['mouseover'],
+                'onChange': ["blur", "change", "click", "focus", "input", "keydown", "keyup", "selectionchange"]
+            }
+            let eventPriority = {
+                'click': 0,
+                'drag': 1,
+                'mouseover': 1,
+                'animationstart': 2,
+            }
 
-                        break;
-                    case 'children':
-                        if (typeof nextProp === 'string') {
-                            let canSetTextContent = tag !== 'textarea' || nextProp !== '';
+            if (eventDependencies[key]) {
+                for (let i = 0; i < eventDependencies[key].length; i++) {
+                    //针对click change等事件 
+                    let event = eventDependencies[key][i];
 
-                            if (canSetTextContent) {
-                                domElement.textContent = nextProp;
-                                // if (text) {
-                                //     var firstChild = node.firstChild;
+                    if (!listenedEvents.has(event)) {
+                        //(mediaEventTypes) 媒体事件没有冒泡一说所以不会挂在document上;
+                        let mediaEventTypes = ["abort", "canplay", "canplaythrough", "durationchange", "emptied", "encrypted", "ended", "error", "loadeddata", "loadedmetadata", "loadstart", "pause", "play", "playing", "progress", "ratechange", "seeked", "seeking", "stalled", "suspend", "timeupdate", "volumechange", "waiting"];
+                        if (mediaEventTypes.indexOf(event) === -1) {
+                            let listener = null;
+                            switch (eventPriority[event]) {
+                                case 0://DiscreteEvent 离散型事件/独立型事件
 
-                                //     if (firstChild && firstChild === node.lastChild && firstChild.nodeType === TEXT_NODE) {
-                                //       firstChild.nodeValue = text;
-                                //       return;
-                                //     }
-                                //   }
-                                //   setTextContent(domElement, nextProp);
+                                    break;
+                                case 1://UserBlockingEvent 用户阻塞型事件
+
+                                    break;
+                                case 2://ContinuousEvent 持续型事件
+
+                                    break;
+                                default:
+                                    break;
                             }
+                            doc.addEventListener(event, listener, false);
                         }
-                        break;
-                    case 'className':
-                        domElement.setAttribute('class', nextProp);
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                //event DOCUMENT_NODE 9 DOCUMENT_FRAGMENT_NODE 11
-                let isDocumentOrFragment = domElement.nodeType === 9 || domElement.nodeType === 11;
-                let doc = isDocumentOrFragment ? domElement : document;
-                //
-                let listenedEvents = elementListeningSets.get(doc);
-                if (!listenedEvents) {
-                    listenedEvents = new Set();
-                    elementListeningSets.set(doc, listenedEvents);
-                }
-                let eventDependencies = {
-                    'onClick': ['click'],
-                    'onChange': ["blur", "change", "click", "focus", "input", "keydown", "keyup", "selectionchange"]
-                }
-                let eventPriority = {
-                    'click': 0,
-                    'drag': 1,
-                    'animationstart': 2,
-                }
 
-                if (eventDependencies[key]) {
-                    for (let i = 0; i < eventDependencies[key].length; i++) {
-                        //针对click change等事件 
-                        let event = eventDependencies[key][i];
+                    } else {
 
-                        if (!listenedEvents.has(event)) {
-                            //(mediaEventTypes) 媒体事件没有冒泡一说所以不会挂在document上;
-                            let mediaEventTypes = ["abort", "canplay", "canplaythrough", "durationchange", "emptied", "encrypted", "ended", "error", "loadeddata", "loadedmetadata", "loadstart", "pause", "play", "playing", "progress", "ratechange", "seeked", "seeking", "stalled", "suspend", "timeupdate", "volumechange", "waiting"];
-                            if (mediaEventTypes.indexOf(event) === -1) {
-                                let listener = null;
-                                switch (eventPriority[event]) {
-                                    case 0://DiscreteEvent 离散型事件/独立型事件
-                                    
-                                        break;
-                                    case 1://UserBlockingEvent 用户阻塞型事件
-
-                                        break;
-                                    case 2://ContinuousEvent 持续型事件
-
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                doc.addEventListener(event, listener, false);
-                            }
-
-                        } else {
-
-                        }
                     }
                 }
             }
-
         }
     }
-
-
 }
 //TODO 
 let elementListeningSets = new WeakMap();

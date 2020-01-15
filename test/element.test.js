@@ -17,20 +17,55 @@ describe('may.js', () => {
 					</div>);
 			}
 		}
+		let inputStyle = {
+			display: 'block',
+			fontSize: '30px',
+			marginTop: '30px',
+			width: '100%'
+		}
+		let divStyle = {
+			fontSize: '30px',
+			marginTop: '30px',
+			width: '100%',
+			background: '#92B901'
+		}
 		class Parent extends React.Component {
 			constructor() {
 				super();
-				this.state = { val: 'may Test' };
+				this.state = { val: 'element.test.js' };
 			}
-			Change = () => {
-				this.setState({ val: 'I see' });
+			componentDidMount() {
+				let dom = document.querySelector('.mystyle');
+				const event = new MouseEvent('click', { bubbles: true });
+				dom.dispatchEvent(event);
+				const over = new MouseEvent('mouseover', { bubbles: true });
+				dom.dispatchEvent(over);
+			}
+			handleClick = (e) => {
+				console.log('handleClick');
+				this.setState({ val: 'handleClick' });
+			}
+			handleDrag = (e) => {
+				console.log('handleDrag');
+				this.setState({ val: 'handleDrag' });
+			}
+			handleChange = (e) => {
+				console.log('handleChange');
+				this.setState({ val: 'handleChange' });
+			}
+			handelMouseEnter = (e) => {
+				console.log('handelMouseEnter');
+				this.setState({ val: 'handelMouseEnter' });
+			}
+			handelMouseOver = (e) => {
+				console.log('handelMouseOver');
+				this.setState({ val: 'handelMouseOver' });
 			}
 			render() {
 				return (
-					<div className="mystyle" style={{ width: '40%', marginLeft: '30px', backgroundColor: 'blue' }} onClick={this.Change}>
+					<div className="mystyle" draggable="true" style={divStyle} onDrag={this.handleDrag} onClick={this.handleClick} onMouseEnter={this.handelMouseEnter} onMouseOver={this.handelMouseOver}>
 						{this.state.val}
-						{/* {this.state.val === 'I wonder' ? <Child key="1" val="1" /> : <Child key="1" val="1" />} */}
-						{/* {this.state.val === 'I wonder' ? <Child key="2" val="2" /> : <Child key="3" val="3" />} */}
+						<input onChange={this.handleChange} style={inputStyle} />
 					</div>
 				);
 			}
