@@ -1,7 +1,7 @@
 
 
-import React, { useState, useEffect } from './react_build/nodeModulesSource/react/index';
-import ReactDOM from './react_build/nodeModulesSource/react-dom/index';
+import React, { useState, useEffect,concur } from './react_build/nodeModulesSource/react/index';
+import ReactDOM, { createRoot, flushSync } from './react_build/nodeModulesSource/react-dom/index';
 
 describe('may.js', () => {
 
@@ -102,7 +102,8 @@ describe('may.js', () => {
 			}
 		}
 		// debugger
-		ReactDOM.render(<Parent />, container);
+		createRoot(container).render(<Parent />);
+		// ReactDOM.render(<Parent />, container);
 		expect(console.error.calls.count()).toBe(0);
 	});
 
