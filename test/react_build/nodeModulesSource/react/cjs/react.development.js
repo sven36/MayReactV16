@@ -21,7 +21,6 @@ var checkPropTypes = require('prop-types/checkPropTypes');
 // TODO: this is special because it gets imported during build.
 
 var ReactVersion = '16.11.0';
-console.log('nodeModulesSource', ReactVersion);
 
 // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.

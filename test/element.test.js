@@ -71,7 +71,6 @@ describe('may.js', () => {
 				// box.dispatchEvent(amiEvent);
 			}
 			handleClick = (e) => {
-				confusingComputations();
 				console.log('handleClick');
 				this.setState({ val: 'handleClick' });
 			}
@@ -80,16 +79,17 @@ describe('may.js', () => {
 				this.setState({ val: 'handleDrag' });
 			}
 			handleChange = (e) => {
-				console.log('handleChange');
+				confusingComputations();
+				// console.log('handleChange');
 				this.setState({ val: 'handleChange' });
 			}
 			handelMouseOver = (e) => {
-				console.log('handelMouseOver');
+				// console.log('handelMouseOver');
 				this.setState({ val: 'handelMouseOver' });
 			}
 			handleAnimation = (e) => {
-				console.log('handleAnimation');
-				this.setState({ val: 'handleAnimation' });
+				// console.log('handleAnimation');
+				this.setState({ val: 'handleAnimation2' });
 			}
 			render() {
 				return (
@@ -101,7 +101,7 @@ describe('may.js', () => {
 				);
 			}
 		}
-		// debugger
+		debugger
 		createRoot(container).render(<Parent />);
 		// ReactDOM.render(<Parent />, container);
 		expect(console.error.calls.count()).toBe(0);
@@ -148,7 +148,7 @@ describe('A.js', () => {
 	});
 })
 function confusingComputations() {
-	const iterations = 500;
+	const iterations = 100;
 	const multiplier = 1000000000;
 	var primes = [];
 	for (var i = 0; i < iterations; i++) {
