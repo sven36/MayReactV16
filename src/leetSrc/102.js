@@ -53,21 +53,23 @@ var levelOrder = function (root) {
         return [];
     }
     let res = [];
-    let i = -1;
-    function walk(node) {
-        i++;
-        if (node) {
-            if (!res[i]) {
-                res[i] = [node.val];
-            } else {
-                res[i].push(node.val);
+    let queue = [root];
+    while (queue.length) {
+        let len = queue.length;
+        let i = 0;
+        res.push([]);
+        while (i++ < len) {
+            let current = queue.shift();
+            res[res.length - 1].push(current.val);
+            if (current.left) {
+                queue.push(current.left);
             }
-            walk(node.left);
-            walk(node.right);
+            if (current.right) {
+                queue.push(current.right);
+            }
+
         }
-        i--;
     }
-    walk(root);
     return res;
 };
 // @lc code=end
