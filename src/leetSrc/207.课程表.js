@@ -57,23 +57,14 @@
  * @return {boolean}
  */
 var canFinish = function (numCourses, prerequisites) {
-    let map = {};
+    let inDegree = new Array(numCourses).fill(0);
     let queue = [];
-    for (let i = numCourses - 1; i > 0; i--) {
-        map[i] = null;
-        prerequisites.map(item => {
-            if (item[0] === i) {
-                if (!map[i]) {
-                    map[i] = [item[1]];
-                } else {
-                    map[i].push(item[1]);
-                }
-            }
-        });
-    }
-    for (const key in map) {
-        if (map[key] === null) {
-            queue.push(key);
+    prerequisites.map(item => {
+        inDegree[item[0]]++;
+    });
+    for (let k = 0; k < numCourses; k++) {
+        if (inDegree[k] === 0) {
+            queue.push(k);
         }
     }
     while (queue.length) {
@@ -81,13 +72,16 @@ var canFinish = function (numCourses, prerequisites) {
         numCourses--;
         prerequisites.map(item => {
             if (item[1] == node) {
-                queue.push(item[0]);
+                inDegree[item[0]]--;
+                if (inDegree[item[0]] === 0) {
+                    queue.push(item[0]);
+                }
             }
         });
     }
     return numCourses === 0;
 };
-canFinish(7, [[1, 3], [1, 4], [2, 4], [3, 5], [3, 6], [4, 6]])
-//[[1,3],[1,4],[2,4],[3,5],[3,6],[4,6]]
+// canFinish(3, [[1, 0], [1, 2], [0, 1]])
+// canFinish(7, [[1, 3], [1, 4], [2, 4], [3, 5], [3, 6], [4, 6]])
 // @lc code=end
 
