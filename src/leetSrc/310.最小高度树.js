@@ -64,9 +64,44 @@
  * @param {number[][]} edges
  * @return {number[]}
  */
-var findMinHeightTrees = function (n, edges) {
-    let inDegree = new Array(n).fill(0);
-    
+var findMinHeightTrees = function (numCourses, prerequisites) {
+    if (prerequisites.length <= 0) return [0];
+    let adj = new Array(numCourses),
+        temp = [];
+    // initialize adj
+    for (let i = 0; i < numCourses; i++) {
+        adj[i] = [];
+    }
+    for (let i = 0; i < prerequisites.length; i++) {
+        adj[prerequisites[i][0]].push(prerequisites[i][1]);
+        adj[prerequisites[i][1]].push(prerequisites[i][0]);
+    }
+    for (let i = 0; i < numCourses; i++) {
+        if (adj[i].length === 1) {
+            temp.push(i);
+        }
+    }
+    while (numCourses > 2) {
+        numCourses -= temp.length;
+        let next = [];
+        for (let i = 0; i < temp.length; i++) {
+            // 叶子节点的相邻节点
+            let k = adj[temp[i]].pop();
+            // 在temp的邻接表中删除这个叶子节点
+            for (let j = 0; j < adj[k].length; j++) {
+                if (adj[k][j] === temp[i]) {
+                    adj[k].splice(j, 1);
+                    break;
+                }
+            }
+            if (adj[k].length === 1) {
+                next.push(k);
+            }
+        }
+        temp = next;
+    }
+    return temp;
 };
+// findMinHeightTrees(6, [[0, 3], [1, 3], [2, 3], [4, 3], [5, 4]]);
 // @lc code=end
 
