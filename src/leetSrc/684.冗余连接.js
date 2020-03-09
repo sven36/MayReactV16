@@ -10,22 +10,45 @@
  * @return {number[]}
  */
 var findRedundantConnection = function (edges) {
-    if (!edges || !edges[0]) {
-        return [];
-    }
-    //并查集
-    // let start = edges[0][0];
-    let len = edges.length;
-    // let end = edges[len][1];
-    if (len % 2 === 0) {
-        return edges[len - 1];
-    } else {
-        return edges[len - 2];
-    }
-    // for (let i = 0; i < edges.length; i++) {
-    //     const line = edges[i];
+    let n = edges.length;
+    let parent = new Array(n);
 
-    // }
+    for (let i = 0; i < n; i++) {
+        parent[i] = i;
+    }
+
+    for (let i = 0; i < n; i++) {
+        let edge = edges[i];
+        if (connected(edge[0], edge[1])) {
+            return edge;
+        }
+        union(edge[0], edge[1]);
+    }
+
+    function connected(a, b) {
+        return find(a) === find(b);
+    }
+
+    function union(a, b) {
+        let rootA = find(a);
+        let rootB = find(b);
+
+        if (rootA === rootB) {
+            return;
+        } else {
+            parent[rootA] = rootB;
+        }
+    }
+
+    function find(a) {
+        while (parent[a] !== a) {
+            parent[a] = parent[parent[a]];
+            a = parent[a];
+        }
+        return a;
+    }
+
 };
+// findRedundantConnection([[1,2],[1,3],[2,3]])
 // @lc code=end
 
