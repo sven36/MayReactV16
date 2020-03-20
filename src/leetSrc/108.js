@@ -40,6 +40,10 @@
  *     this.left = this.right = null;
  * }
  */
+function TreeNode(val) {
+    this.val = val;
+    this.left = this.right = null;
+}
 /**
  * @param {number[]} nums
  * @return {TreeNode}
@@ -58,5 +62,59 @@ var sortedArrayToBST = function (nums) {
     }
     return build(0, nums.length)
 };
+
+// sortedArrayToBST([-10, -3, 0, 5, 9])
+
+function unique(array) {
+    return [...new Set(array)]
+}
+unique([1, 1, 2, 3, '1'])
+
+function flatten(arr) {
+    return arr.reduce(function (prev, next) {
+        return prev.concat(Array.isArray(next) ? flatten(next) : next);
+    }, [])
+}
+var arr = [1, [2, [3, 4]]];
+// flatten(arr);
+let curry = function (fn, args) {
+    let length = fn.length;
+    args = args || [];
+    return function () {
+        let params = [].slice.call(arguments);
+        args = args.concat(params);
+        if (args.length <= length) {
+            return curry(fn, args);
+        } else {
+            return fn(args);
+        }
+    }
+}
+let ccc = curry((a, b) => a + b);
+// ccc(1)(2)(3)
+
+function throttle(func, wait) {
+    let prev = 0;
+    return () => {
+        let now = Date.now();
+        if (now - prev > wait) {
+            func.apply(this, arguments);
+            prev = Date.now();
+        }
+    }
+}
+function debounce(func, wait) {
+    let timeId;
+    return function () {
+        timeId && clearTimeout(timeId);
+        timeId = setTimeout(func, wait);
+    }
+}
+var bind = function (context) {
+    let func = this;
+    return function () {
+        func.apply(context, [].slice.call(arguments));
+    }
+}
 // @lc code=end
 
