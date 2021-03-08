@@ -2,8 +2,11 @@
 
 // import PropTypes from '../../lib/ReactPropTypes';
 // import ReactTestUtils from "../../lib/ReactTestUtils";
-import React from '../src/May16';
-import ReactDOM from '../src/may-dom/MayDom';
+// import React from '../src/May16';
+// import ReactDOM from '../src/may-dom/MayDom';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useRequest } from 'ahooks';
 // import {shallowCompare} from '../../src/PureComponent';
 
 // var ReactDOM = {
@@ -30,33 +33,54 @@ describe('may2.js', () => {
         spyOn(console, 'error');
         var container = document.createElement('div');
         document.body.appendChild(container);
-        class Child extends React.Component {
+        const Article = () => {
+            const { data, loading } = useRequest(new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        time: new Date().getTime(),
+                    });
+                }, 1000);
+            }), {
+                cacheKey: 'article',
+            });
+            if (!data && loading) {
+                return <p>loading</p>;
+            }
+            return (
+                <>
+                    <p>12332</p>
+                </>
+            );
+        };
+        ReactDOM.render(<Article />, container);
 
-            render() {
-                return (
-                    <div>
-                        {this.props.val}
-                    </div>);
-            }
-        }
-        class Parent extends React.Component {
-            constructor() {
-                super();
-                this.state = { val: 'I wonder' };
-            }
-            Change = () => {
-                this.setState({ val: 'I see' });
-            }
-            render() {
-                return (
-                    <div className="mystyle" style={{ width: '40%', marginLeft: '30px', backgroundColor: 'blue' }} onClick={this.Change}>
-						{this.state.val}
-                        {/* {this.state.val === 'I wonder' ? <Child key="1" val="1" /> : <Child key="1" val="1" />} */}
-                        {/* {this.state.val === 'I wonder' ? <Child key="2" val="2" /> : <Child key="3" val="3" />} */}
-                    </div>
-                );
-            }
-        }
+        // class Child extends React.Component {
+
+        //     render() {
+        //         return (
+        //             <div>
+        //                 {this.props.val}
+        //             </div>);
+        //     }
+        // }
+        // class Parent extends React.Component {
+        //     constructor() {
+        //         super();
+        //         this.state = { val: 'I wonder' };
+        //     }
+        //     Change = () => {
+        //         this.setState({ val: 'I see' });
+        //     }
+        //     render() {
+        //         return (
+        //             <div className="mystyle" style={{ width: '40%', marginLeft: '30px', backgroundColor: 'blue' }} onClick={this.Change}>
+        // 				{this.state.val}
+        //                 {/* {this.state.val === 'I wonder' ? <Child key="1" val="1" /> : <Child key="1" val="1" />} */}
+        //                 {/* {this.state.val === 'I wonder' ? <Child key="2" val="2" /> : <Child key="3" val="3" />} */}
+        //             </div>
+        //         );
+        //     }
+        // }
         // ReactDOM.render(<Parent />, container);
         expect(console.error.calls.count()).toBe(0);
     });
