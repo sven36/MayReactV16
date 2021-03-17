@@ -68,20 +68,14 @@
  * @return {boolean}
  */
 var hasCycle = function (head) {
-    // const flag = Symbol();
-    // while (head) {
-    //     if (head.val === flag) return true;
-    //     head.val = flag;
-    //     head = head.next;
-    // }
-    // return false;
-    let ha = new Map();
+    let map = new Map();
     while (head) {
-        if (ha.get(head)) return true;
-        ha.set(head, 1);
+        if (map.get(head)) {
+            return true
+        }
+        map.set(head, 1);
         head = head.next;
     }
-    return false;
+    return false
 };
 // @lc code=end
-

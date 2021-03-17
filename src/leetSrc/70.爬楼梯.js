@@ -48,11 +48,6 @@ var climbStairs = function (n) {
     if (n <= 2) {
         return n;
     }
-    let arr = [1, 2];
-    for (let i = 2; i < n; i++) {
-        arr.push(arr[i - 1] + arr[i - 2]);
-    }
-    return arr[n - 1];
+    return climbStairs(n - 1) + climbStairs(n - 2);
 };
 // @lc code=end
-

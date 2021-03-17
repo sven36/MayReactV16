@@ -88,14 +88,12 @@
  * @return {ListNode}
  */
 var getIntersectionNode = function (headA, headB) {
-    var pA = headA;
-    var pB = headB;
-    while (pA !== pB) {
-        pB = pB ? pB.next : headA;
-        pA = pA ? pA.next : headB;
+    let a = headA;
+    let b = headB;
+    while (a !== b) {
+        a = a ? a.next : headB;
+        b = b ? b.next : headA;
     }
-    return pA;
-
+    return a;
 };
 // @lc code=end
-
