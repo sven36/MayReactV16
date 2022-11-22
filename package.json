@@ -28,7 +28,7 @@
     "anujs": "1.5.3",
     "babel-loader": "8.0.6",
     "jasmine-core": "3.4.0",
-    "karma": "4.1.0",
+    "karma": "6.4.1",
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "2.0.1",
     "karma-webpack": "4.0.2",
